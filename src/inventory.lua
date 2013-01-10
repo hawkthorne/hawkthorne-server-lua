@@ -9,6 +9,9 @@ local anim8 = require 'vendor/anim8'
 local sound = require 'vendor/TEsound'
 local camera = require 'camera'
 local debugger = require 'debugger'
+local Server = require 'server'
+local server = Server.getSingleton()
+
 
 --The crafting recipes (for example stick+rock=knife)
 local recipes = require 'items/recipes'
@@ -484,7 +487,8 @@ function Inventory:addItem(item)
         return false
     end
     self.pages[pageIndex][slot] = item
-    sound.playSfx('pickup')
+    local msg = string.format("%s %s %s",self.id,"sound","pickup")
+    server:sendtoplayer(msg,"*")        
     return true
 end
 

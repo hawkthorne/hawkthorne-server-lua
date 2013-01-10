@@ -1,6 +1,8 @@
 local anim8 = require 'vendor/anim8'
 local Timer = require 'vendor/timer'
 local sound = require 'vendor/TEsound'
+local Server = require 'server'
+local server = Server.getSingleton()
 
 local characters = {}
 
@@ -124,7 +126,8 @@ function Character:respawn()
     self.warpin = true
     self:current().animations.warp:gotoFrame(1)
     self:current().animations.warp:resume()
-    sound.playSfx( "respawn" )
+    local msg = string.format("%s %s %s",self.id,"sound","respawn")
+    server:sendtoplayer(msg,"*")
     Timer.add(0.30, function() self.warpin = false end)
 end
 

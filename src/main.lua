@@ -1,3 +1,8 @@
+local socket = require "socket"
+require 'vendor/lube'
+local Server = require 'server'
+local server = Server.getSingleton()
+
 local correctVersion = require 'correctversion'
 
 if correctVersion then
@@ -17,140 +22,140 @@ if correctVersion then
   local character = require 'character'
   local cheat = require 'cheat'
   local player = require 'player'
+  local Server = require 'server'
+
+  local players = server.players -- players[player_id] = player
+  local levels = server.levels  -- levels[level_name] = level
 
   -- XXX Hack for level loading
   Gamestate.Level = Level
-
+  local data, msg_or_ip, port_or_nil
+  local entity, cmd, parms
   -- Get the current version of the game
   local function getVersion()
     return split(love.graphics.getCaption(), "v")[2]
   end
 
+function server_print(...)
+  print(...)
+  io.flush()
+end
   function love.load(arg)
+    server_print("Beginning hawkthorne server loop.")
     table.remove(arg, 1)
-    local state, door = 'splash', nil
 
-    -- SCIENCE!
-    mixpanel.init("ac1c2db50f1332444fd0cafffd7a5543")
-    mixpanel.track('game.opened')
-
-    -- set settings
-    local options = require 'options'
-    options:init()
-
-    cli:add_option("-l, --level=NAME", "The level to display")
-    cli:add_option("-r, --door=NAME", "The door to jump to ( requires level )")
-    cli:add_option("-c, --character=NAME", "The character to use in the game")
-    cli:add_option("-o, --costume=NAME", "The costume to use in the game")
-    cli:add_option("-m, --money=COINS", "Give your character coins ( requires level flag )")
-    cli:add_option("-v, --vol-mute=CHANNEL", "Disable sound: all, music, sfx")
-    cli:add_option("-g, --god", "Enable God Mode Cheat")
-    cli:add_option("-j, --jump", "Enable High Jump Cheat")
-    cli:add_option("-d, --debug", "Enable Memory Debugger")
-    cli:add_option("-b, --bbox", "Draw all bounding boxes ( enables memory debugger )")
-    cli:add_option("--console", "Displays print info")
-
-    local args = cli:parse(arg)
-
-    if not args then
-        love.event.push("quit")
-        return
-    end
-
-    if args["level"] ~= "" then
-      state = args["level"]
-    end
-
-    if args["door"] ~= "" then
-      door = args["door"]
-    end
-
-    if args["character"] ~= "" then
-      character:setCharacter( args["c"] )
-    end
-
-    if args["costume"] ~= "" then
-      character:setCostume( args["o"] )
-    end
-    
-    if args["vol-mute"] == 'all' then
-      sound.disabled = true
-    elseif args["vol-mute"] == 'music' then
-      sound.volume('music',0)
-    elseif args["vol-mute"] == 'sfx' then
-      sound.volume('sfx',0)
-    end
-
-    if args["money"] ~= "" then
-      player.startingMoney = tonumber(args["money"])
-    end
-
-    
-    if args["d"] then
-      debugger.set( true, false )
-    end
-
-    if args["b"] then
-      debugger.set( true, true )
-    end
-    
-    if args["g"] then
-      cheat.god = true
-    end
-    
-    if args["j"] then
-      cheat.jump_high = true
-    end
     
     love.graphics.setDefaultImageFilter('nearest', 'nearest')
     camera:setScale(window.scale, window.scale)
     love.graphics.setMode(window.screen_width, window.screen_height)
 
-    Gamestate.switch(state,door)
   end
 
   function love.update(dt)
-    if paused then return end
-    if debugger.on then debugger:update(dt) end
     dt = math.min(0.033333333, dt)
-    Gamestate.update(dt)
-    sound.cleanup()
-  end
-
-  function love.keyreleased(key)
-    local button = controls.getButton(key)
-    if button then Gamestate.keyreleased(button) end
-  end
-
-  function love.keypressed(key)
-    if key == 'f5' then debugger:toggle() end
-    local button = controls.getButton(key)
-    if button then Gamestate.keypressed(button) end
-  end
-
-  function love.draw()
-    camera:set()
-    Gamestate.draw()
-    camera:unset()
-
-    if paused then
-      love.graphics.setColor(75, 75, 75, 125)
-      love.graphics.rectangle('fill', 0, 0, love.graphics:getWidth(),
-      love.graphics:getHeight())
-      love.graphics.setColor(255, 255, 255, 255)
+    for level_name,level in pairs(levels) do
+        level:update(dt)
     end
+    
+    --
+    -- [NOTE: strictly, we could have just used receivefrom (and its 
+    -- counterpart, sendto) in the client. there's nothing special about the
+    -- functions to prevent it, indeed. send/receive are just convenience
+    -- functions, sendto/receive from are the real workers.]
+    data, msg_or_ip, port_or_nil = server:receivefrom()
+    if data then
+        io.flush()
+        -- more of these funky match patterns!
+        entity, cmd, parms = data:match("^(%S*) (%S*) (.*)")
+        if cmd == 'keypressed' then
+            local button = parms:match("^(%S*)")
+            local player = players[entity]
+            local level = player.level
+            level = Gamestate.get(level)
+            player.key_down[button] = true
+            if level then level:keypressed( button, player) end
+            print("keypressed:"..button)
+        elseif cmd == 'keyreleased' then
+            local button = parms:match("^(%S*)")
+            local level = players[entity].level
+            level = Gamestate.get(level)
+            local player = players[entity]
+            player.key_down[button] = false
+            player.key_down[button] = false
+            if level then level:keyreleased( button, player) end
+            print("keyreleased:"..button)
+        elseif cmd == 'keydown' then
+            -- local button = parms:match("^(%S*)")
+            -- local level = players[entity].level
+            -- local player = players[entity]
+        elseif cmd == 'update' then
+            --sends an update back to the client
+            local level = parms:match("^(%S*)")
+            if level ~= '$' then
+            assert(level,"Must update a specific level")
+            levels[level] = levels[level] or Gamestate.load(level)
+            levels[level].nodes = levels[level].nodes or {}
+            --update objects for client(s)
+            for i, node in pairs(levels[level].nodes) do
+                if node.draw and node.position then
+                    local objectBundle  = {level = level,
+                      x = node.position.x,y = node.position.y,
+                      state = state,
+                      position = node.animation and node:animation().position,
+                      direction = node.direction,
+                      id = i,
+                      name = node.name,
+                      type = node.type,
+                      }
+                    server:sendtoip(string.format("%s %s %s", i, 'updateObject', lube.bin:pack_node(objectBundle)), msg_or_ip,  port_or_nil)
+                end
+            end
+            for i, plyr in pairs(players) do
+                    local playerBundle  = {id = plyr.id,
+                                          level = plyr.level,
+                                          x = plyr.position.x, y = plyr.position.y,
+                                          name = plyr.character.name,
+                                          costume = plyr.character.costume,
+                                          state = plyr.character.state,
+                                          position = plyr.character:animation() and 
+                                                     plyr.character:animation().position,
+                                          direction = plyr.character.direction}
 
-    if debugger.on then debugger:draw() end
+                server:sendtoip(string.format("%s %s %s", i, 'updatePlayer', lube.bin:pack_node(playerBundle)), msg_or_ip,  port_or_nil)
+            end
+            end
+            --update players for client(s)
+       elseif cmd == 'register' then
+            local name,costume = parms:match("^(%S*) (.*)")
+            server_print("registering a new player:", entity)
+            server_print("msg_or_ip:", msg_or_ip)
+            server_print("port_or_nil:", port_or_nil)
+            server_print()
+            players[entity] = Player.new()
+            players[entity].id = entity
+            --todo:remove town dependence
+            players[entity].level = 'town'
+            players[entity].ip_address = msg_or_ip
+            players[entity].character.name=name
+            players[entity].character.costume=costume
+            print("registered")
+        elseif cmd == 'enterLevel' then
+            local level = parms:match("^(%S*)")
+            players[entity].level = level
+            Gamestate.switch(Gamestate.get(players[entity].level),nil,players[entity])
+        elseif cmd == 'unregister' then
+            server_print("unregistering a player:", entity)
+            server_print("msg_or_ip:", msg_or_ip)
+            server_print("port_or_nil:", port_or_nil)
+            players[entity] = nil
+        elseif cmd == 'quit' then
+            running = false;
+        else
+            server_print("unrecognized command:'"..(cmd or 'nil').."'")
+            server_print()
+        end
+    elseif msg_or_ip ~= 'timeout' then
+        error("Unknown network error: "..tostring(msg))
+    end
   end
-
-  -- Override the default screenshot functionality so we can disable the fps before taking it
-  local newScreenshot = love.graphics.newScreenshot
-  function love.graphics.newScreenshot()
-    window.dressing_visible = false
-    love.draw()
-    local ss = newScreenshot()
-    window.dressing_visible = true
-    return ss
-  end
-
 end

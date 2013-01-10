@@ -2,6 +2,8 @@ local sound = require 'vendor/TEsound'
 local Gamestate = require 'vendor/gamestate'
 local Sprite = require 'nodes/sprite'
 local Timer = require 'vendor/timer'
+local Server = require 'server'
+local server = Server.getSingleton()
 
 local PlayerAttack = {}
 PlayerAttack.__index = PlayerAttack
@@ -54,7 +56,8 @@ function PlayerAttack:collide(node, dt, mtv_x, mtv_y)
                           }
                         }
     if node.hurt then
-        sound.playSfx('punch')
+        local msg = string.format("%s %s %s",self.id,"sound","punch")
+        server:sendtoplayer(msg,"*")
         local attackSprite = Sprite.new(attackNode, collider)
         table.insert(Gamestate.currentState().nodes,attackSprite)
         attackSprite.nodeidx = #Gamestate.currentState().nodes

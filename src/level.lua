@@ -50,6 +50,7 @@ end
 
 local function on_collision(dt, shape_a, shape_b, mtv_x, mtv_y)
     local player, node, node_a, node_b
+    if shape_a.isPlayer and shape_b.isPlayer then return end
 
     if shape_a.player then
         player = shape_a.player
@@ -81,7 +82,8 @@ end
 
 -- this is called when two shapes stop colliding
 local function collision_stop(dt, shape_a, shape_b)
-    local player, node
+    local player, node, node_a, node_b
+    if shape_a.player and shape_b.player then return end
 
     if shape_a.player then
         player = shape_a.player
@@ -187,12 +189,14 @@ function Level.new(name)
         if v.type == 'door' then
             if v.name then
                 if v.name == 'main' then
+                    assert(not level.default_position,"Level "..name.." must have only one 'main' door")
                     level.default_position = {x=v.x, y=v.y}
                 end
                 level.doors[v.name] = {x=v.x, y=v.y, node=level.nodes[#level.nodes]}
             end
         end
     end
+    assert(level.default_position,"Level "..name.." has no 'main' door")
 
     if level.map.objectgroups.floor then
         for k,v in pairs(level.map.objectgroups.floor.objects) do
@@ -221,28 +225,17 @@ function Level.new(name)
         end
     end
 
-    level.player = player
+    level.players = {}
     level:restartLevel()
     return level
 end
 
 function Level:restartLevel()
-    self.over = false
-
-    self.player = Player.factory(self.collider)
-    self.player:refreshPlayer(self.collider)
-    self.player.boundary = {
-        width = self.map.width * self.map.tilewidth,
-        height = self.map.height * self.map.tileheight
-    }
-    
-    self.player.position = {x = self.default_position.x,
-                            y = self.default_position.y}
     Floorspaces:init()
 end
 
-function Level:enter( previous, door )
-
+function Level:enter( previous, door , player)
+    
     ach:achieve('enter ' .. self.name)
 
     --only restart if it's an ordinary level
@@ -251,29 +244,29 @@ function Level:enter( previous, door )
         self:restartLevel()
     end
     if previous == Gamestate.get('overworld') then
-        self.player.character:respawn()
-    end
-    if not self.player then
-        self:restartLevel()
+        player.character:respawn()
     end
 
-    self.player:setSpriteStates('default')
+    player.boundary = {
+        width = self.map.width * self.map.tilewidth,
+        height = self.map.height * self.map.tileheight
+    }
 
     camera.max.x = self.map.width * self.map.tilewidth - window.width
 
     setBackgroundColor(self.map)
 
-    sound.playMusic( self.music )
+    --sound.playMusic( self.music )
 
     self.hud = HUD.new(self)
 
     if door then
-        self.player.position = {
-            x = self.doors[ door ].x + self.doors[ door ].node.width / 2 - self.player.width / 2,
-            y = self.doors[ door ].y + self.doors[ door ].node.height - self.player.height
+        player.position = {
+            x = math.floor(self.doors[ door ].x + self.doors[ door ].node.width / 2 - player.width / 2),
+            y = math.floor(self.doors[ door ].y + self.doors[ door ].node.height - player.height)
         }
         if self.doors[ door ].warpin then
-            self.player:respawn()
+            player.character:respawn()
         end
         if self.doors[ door ].node then
             self.doors[ door ].node:show()
@@ -281,6 +274,7 @@ function Level:enter( previous, door )
         end
     end
 
+    --this seems borderline disastrous
     for i,node in ipairs(self.nodes) do
         if node.enter then node:enter(previous) end
     end
@@ -292,35 +286,20 @@ function Level:init()
 end
 
 function Level:update(dt)
+    if not self.players then return end
+    
     Tween.update(dt)
-    self.player:update(dt)
+    for _,player in pairs(self.players) do
+        player:update(dt)
+    end
     ach:update(dt)
-
-    -- falling off the bottom of the map
-    if self.player.position.y - self.player.height > self.map.height * self.map.tileheight then
-        self.player.health = 0
-        self.player.dead = true
-    end
-
-    -- start death sequence
-    if self.player.dead and not self.over then
-        ach:achieve('die')
-        sound.stopMusic()
-        sound.playSfx( 'death' )
-        self.over = true
-        self.respawn = Timer.add(3, function()
-            self.player.character:reset()
-            if self.player.lives <= 0 then
-                Gamestate.switch("gameover")
-            else
-                Gamestate.get('overworld'):reset()
-                Gamestate.switch(Level.new(self.spawn))
-            end
-        end)
-    end
-
-    for i,node in ipairs(self.nodes) do
-        if node.update then node:update(dt, self.player) end
+ 
+    --TODO:remove the double nested loop
+    --seems disastrous
+    for _,node in ipairs(self.nodes) do
+        for k,player in pairs(self.players) do
+            if node.update then node:update(dt, player) end
+        end
     end
 
     self.collider:update(dt)
@@ -420,34 +399,36 @@ function Level:floorspaceNodeDraw()
     end
 end
 
-function Level:leave()
+function Level:leave(player)
+    if not player then return end
+    --assert(nil,"Need to associate a player with leaving")
     ach:achieve('leave ' .. self.name)
     for i,node in ipairs(self.nodes) do
         if node.leave then node:leave() end
         if node.collide_end then
-            node:collide_end(self.player)
+            node:collide_end(player)
         end
     end
 end
 
-function Level:keyreleased( button )
-    self.player:keyreleased( button, self )
+function Level:keyreleased( button , player)
+    player:keyreleased( button, self )
 end
 
-function Level:keypressed( button )
+function Level:keypressed( button , player)
     for i,node in ipairs(self.nodes) do
-        if node.player_touched and node.keypressed then
-            if node:keypressed( button, self.player) then
+        if node.player_touched == player and node.keypressed then
+            if node:keypressed( button, player) then
               return true
             end
         end
     end
    
-    if self.player:keypressed( button, self ) then
+    if player:keypressed( button ) then
       return true
     end
 
-    if button == 'START' and not self.player.dead and not self.player.controlState:is('ignorePause') then
+    if button == 'START' and not player.dead and not player.controlState:is('ignorePause') then
         Gamestate.switch('pause')
         return true
     end

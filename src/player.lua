@@ -12,6 +12,8 @@ local Statemachine = require 'datastructures/lsm/statemachine'
 local healthbar = love.graphics.newImage('images/healthbar.png')
 healthbar:setFilter('nearest', 'nearest')
 
+local Server = require 'server'
+local server = Server.getSingleton()
 local Inventory = require('inventory')
 local ach = (require 'achievements').new()
 
@@ -41,8 +43,6 @@ function Player.new(collider)
     local plyr = {}
 
     setmetatable(plyr, Player)
-    
-    plyr.haskeyboard = true
     
     plyr.invulnerable = false
     plyr.actions = {}
@@ -76,7 +76,8 @@ function Player.new(collider)
     return plyr
 end
 
-function Player:refreshPlayer(collider)
+function Player:enter(level)
+    local collider = level.collider
     --changes that are made if you're dead
     if self.dead then
         self.health = self.max_health
@@ -122,9 +123,11 @@ function Player:refreshPlayer(collider)
 
     if self.bb then
         self.collider:remove(self.bb)
+        self.bb = nil
     end
     if self.attack_box and self.attack_box.bb then
         self.collider:remove(self.attack_box.bb)
+        self.attack_box.bb = nil
     end
 
     self.collider = collider
@@ -203,9 +206,9 @@ function Player:keypressed( button, map )
     end
     
     if button == 'SELECT' and not self.interactive_collide then
-        if self.currently_held and self.currently_held.wield and controls.isDown( 'DOWN' )then
+        if self.currently_held and self.currently_held.wield and  self.key_down[ 'DOWN' ]then
             self.currently_held:unuse()
-        elseif self.currently_held and self.currently_held.wield and controls.isDown( 'UP' ) then
+        elseif self.currently_held and self.currently_held.wield and self.key_down[ 'UP' ] then
             self:switchWeapon()
         else
             self.inventory:open()
@@ -214,9 +217,9 @@ function Player:keypressed( button, map )
 
     if button == 'ACTION' and not self.interactive_collide then
         if self.currently_held and not self.currently_held.wield then
-            if controls.isDown( 'DOWN' ) then
+            if self.key_down[ 'DOWN' ] then
                 self:drop()
-            elseif controls.isDown( 'UP' ) then
+            elseif self.key_down[ 'UP' ] then
                 self:throw_vertical()
             else
                 self:throw()
@@ -254,10 +257,10 @@ function Player:update( dt )
         return
     end
 
-    local crouching = controls.isDown( 'DOWN' ) and not self.controlState:is('ignoreMovement')
-    local gazing = controls.isDown( 'UP' ) and not self.controlState:is('ignoreMovement')
-    local movingLeft = controls.isDown( 'LEFT' ) and not self.controlState:is('ignoreMovement')
-    local movingRight = controls.isDown( 'RIGHT' ) and not self.controlState:is('ignoreMovement')
+    local crouching = self.key_down['DOWN']
+    local gazing = self.key_down[ 'UP' ]
+    local movingLeft = self.key_down[ 'LEFT' ]
+    local movingRight = self.key_down[ 'RIGHT' ]
 
 
     if not self.invulnerable then
@@ -339,13 +342,15 @@ function Player:update( dt )
         else
             self.velocity.y = -670
         end
-        sound.playSfx( "jump" )
+        local msg = string.format("%s %s %s",self.id,"sound","jump")
+        server:sendtoplayer(msg,"*")
     elseif jumped and not self.jumping and self:solid_ground()
         and not self.rebounding and self.liquid_drag then
      -- Jumping through heavy liquid:
         self.jumping = true
         self.velocity.y = -270
-        sound.playSfx( "jump" )
+        local msg = string.format("%s %s %s",self.id,"sound","jump")
+        server:sendtoplayer(msg,"*")
     end
 
     if halfjumped and self.velocity.y < -450 and not self.rebounding and self.jumping then
@@ -376,8 +381,8 @@ function Player:update( dt )
 
     --falling off the bottom of the map
     if self.position.y > self.boundary.height then
-        self.health = 0
-        self.character.state = 'dead'
+        self.has_fallen = true
+        self:die(self.health)
         return
     end
 
@@ -453,7 +458,8 @@ function Player:die(damage)
         return
     end
 
-    sound.playSfx( "damage_" .. math.max(self.health, 0) )
+    local msg = string.format("%s %s %s",self.id,"sound", "damage_"..        math.max(self.health, 0) )
+    server:sendtoplayer(msg,"*")
     self.rebounding = true
     self.invulnerable = true
     ach:achieve('damage', damage)
@@ -466,9 +472,24 @@ function Player:die(damage)
         self.health = math.max(self.health - damage, 0)
     end
 
-    if self.health == 0 then -- change when damages can be more than 1
+    if self.health <= 0 then -- change when damages can be more than 1
         self.dead = true
         self.character.state = 'dead'
+        self.lives = self.lives - 1
+        ach:achieve('die')
+        -- sound.stopMusic()
+        local msg = string.format("%s %s %s",self.id,"sound","death")
+        server:sendtoplayer(msg,"*")
+            -- start death sequence
+        self.respawn = Timer.add(3, function()
+            self:revive()
+            if self.lives <= 0 then
+                server:sendtoplayer(string.format("%s %s %s %s", player.id, 'stateSwitch','UNKNOWN','gameover'),player.id)
+            else
+                local spawnLevel = Gamestate.currentState().spawn
+                Gamestate.switch(spawnLevel, nil, player)
+            end
+        end)
     else
         self.hurt = true
         self.character.state = 'hurt'
@@ -485,6 +506,18 @@ function Player:die(damage)
 
     self:startBlink()
 end
+
+--brings the player back to life after death
+--should only be called by Level
+function Player:revive()
+    self.health = self.max_health
+    self.dead = false
+    self.money = 0
+    self.inventory = Inventory.new( self )
+    self:stopBlink()
+    self.character:reset()
+end
+
 
 ---
 -- Call to take falling damage, and reset self.fall_damage to 0
