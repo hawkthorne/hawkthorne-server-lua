@@ -8,6 +8,7 @@ local controls = require 'controls'
 local character = require 'character'
 local PlayerAttack = require 'playerAttack'
 local Statemachine = require 'datastructures/lsm/statemachine'
+local Gamestate = require 'vendor/gamestate'
 
 local healthbar = love.graphics.newImage('images/healthbar.png')
 healthbar:setFilter('nearest', 'nearest')
@@ -72,7 +73,32 @@ function Player.new(collider)
     plyr.money = plyr.startingMoney
     plyr.lives = 3
 
-    plyr:refreshPlayer(collider)
+    plyr.jumpQueue = Queue.new()
+    plyr.halfjumpQueue = Queue.new()
+    plyr.rebounding = false
+    plyr.damageTaken = 0
+
+    plyr.jumping = false
+    plyr.liquid_drag = false
+    plyr.flash = false
+    plyr.actions = {}
+
+    plyr.velocity = {x=0, y=0}
+    plyr.fall_damage = 0
+    plyr.since_solid_ground = 0
+    plyr.dead = false
+
+    plyr:setSpriteStates('default')
+
+    plyr.freeze = false
+    plyr.mask = nil
+
+    plyr.currently_held = nil -- Object currently being held by the player
+    plyr.holdable       = nil -- Object that would be picked up if player used grab key
+
+    plyr.key_down = {}
+    plyr.character = character.new()
+    plyr.character:reset()
     return plyr
 end
 
@@ -244,11 +270,34 @@ function Player:keyreleased( button, map )
     end
 end
 
+--returns true if I'm in a level
+-- i.e. my position is updated
+function Player:ignoreUpdate()
+  if self.level=="overworld" then
+    return true
+  else
+    return false
+  end
+end
+
 ---
 -- This is the main update loop for the player, handling position updates.
 -- @param dt The time delta
 -- @return nil
 function Player:update( dt )
+    if self:ignoreUpdate() then
+        if not self.INITIALIZED then
+            --require("mobdebug").start()
+            self.INITIALIZED = true
+        end
+        return
+    end
+
+    if not self.boundary and self.level then
+      local level = Gamestate.get(self.level)
+      local overworld = Gamestate.get("overworld")
+      level:enter(overworld,"main",self)
+    end
 
     self.inventory:update( dt )
     self.attack_box:update()

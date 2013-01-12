@@ -21,7 +21,7 @@ if correctVersion then
   local mixpanel = require 'vendor/mixpanel'
   local character = require 'character'
   local cheat = require 'cheat'
-  local player = require 'player'
+  local Player = require 'player'
   local Server = require 'server'
 
   local players = server.players -- players[player_id] = player
@@ -43,7 +43,7 @@ end
   function love.load(arg)
     server_print("Beginning hawkthorne server loop.")
     table.remove(arg, 1)
-
+    --require ("mobdebug").start()
     
     love.graphics.setDefaultImageFilter('nearest', 'nearest')
     camera:setScale(window.scale, window.scale)
@@ -88,6 +88,12 @@ end
             -- local button = parms:match("^(%S*)")
             -- local level = players[entity].level
             -- local player = players[entity]
+        elseif cmd == 'enter' then
+            local level = parms:match("^(%S*)")
+            levels[level] = levels[level] or Gamestate.load(level)
+            level = levels[level]
+            local player = players[entity]
+            level:enter(require("overworld"),"main",player)
         elseif cmd == 'update' then
             --sends an update back to the client
             local level = parms:match("^(%S*)")

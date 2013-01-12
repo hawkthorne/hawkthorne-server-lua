@@ -152,6 +152,9 @@ function state:reset()
 end
 
 function state:update(dt)
+    --IGNORE overworld updates on the server side
+    if true then return end
+    
     water:update(dt)
     
     for _,_sp in pairs(sparkles) do

@@ -2,6 +2,7 @@ local Gamestate = require 'vendor/gamestate'
 local Tween = require 'vendor/tween'
 local anim8 = require 'vendor/anim8'
 local sound = require 'vendor/TEsound'
+local server = (require 'server').getSingleton()
 
 local Door = {}
 Door.__index = Door
@@ -58,6 +59,10 @@ function Door.new(node, collider)
 end
 
 function Door:switch(player)
+    if not self.INITIALIZED then
+      --require("mobdebug").start()
+      self.INITIALIZED = true
+    end
     local _, _, _, wy2  = self.bb:bbox()
     local _, _, _, py2 = player.bb:bbox()
     
@@ -75,19 +80,22 @@ function Door:switch(player)
     local level = Gamestate.get(self.level)
     local current = Gamestate.currentState()
 
-    if current == level then
-        level.player.position = { -- Copy, or player position corrupts entrance data
-            x = level.doors[ self.to ].x + level.doors[ self.to ].node.width / 2 - level.player.width / 2,
-            y = level.doors[ self.to ].y + level.doors[ self.to ].node.height - level.player.height
+    if current == level and self.level ~= "overworld" then
+        player.position = { -- Copy, or player position corrupts entrance data
+            x = level.doors[ self.to ].x + level.doors[ self.to ].node.width / 2 - player.width / 2,
+            y = level.doors[ self.to ].y + level.doors[ self.to ].node.height - player.height
         }
         return
     end
-
-    if self.level == 'overworld' then
-        Gamestate.switch(self.level, self.to)
-    else
-        Gamestate.switch(self.level, self.to)
-    end
+    
+    local old_level = Gamestate.get(player.level)
+    old_level.players[player.id]=nil
+    --TODO:remove player's attack boundingbbox
+    old_level.collider:remove(player.bb)
+    player.bb = nil
+    player.level=self.level
+    local msg = string.format("%s %s %s %s",player.id,"stateSwitch",player.level, self.level)
+    server:sendtoplayer(msg,"*")
 
 end
 

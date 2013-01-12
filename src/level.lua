@@ -148,7 +148,7 @@ Level.level = true
 function Level.new(name)
     local level = {}
     setmetatable(level, Level)
-
+    
     level.over = false
     level.name = name
 
@@ -179,7 +179,6 @@ function Level.new(name)
     level.nodes = {}
     level.doors = {}
 
-    level.default_position = {x=0, y=0}
     for k,v in pairs(level.map.objectgroups.nodes.objects) do
         node = load_node(v.type)
         if node then
@@ -237,7 +236,7 @@ end
 function Level:enter( previous, door , player)
     
     ach:achieve('enter ' .. self.name)
-
+    self.players[player.id] = player
     --only restart if it's an ordinary level
     if previous.level or previous==Gamestate.get('overworld') then
         self.previous = previous
@@ -278,6 +277,7 @@ function Level:enter( previous, door , player)
     for i,node in ipairs(self.nodes) do
         if node.enter then node:enter(previous) end
     end
+    player:enter(self)
 end
 
 
@@ -287,6 +287,17 @@ end
 
 function Level:update(dt)
     if not self.players then return end
+    
+    --TODO:find a better way to associate players with levels
+    -- I shouldn't need to loop through the server's players
+    --TODO:maybe add a test to determine if player.level is correct
+    local plyrs = require("server").getSingleton().players
+    for _,plyr in pairs(plyrs) do
+      if not plyr.attack_box then
+        plyr:enter(Gamestate.get(plyr.level))
+      end
+      self.players[plyr.id] = plyr
+    end
     
     Tween.update(dt)
     for _,player in pairs(self.players) do
@@ -401,6 +412,8 @@ end
 
 function Level:leave(player)
     if not player then return end
+    self.collider:remove(player.bb)
+    player.bb = nil
     --assert(nil,"Need to associate a player with leaving")
     ach:achieve('leave ' .. self.name)
     for i,node in ipairs(self.nodes) do

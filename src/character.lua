@@ -126,8 +126,8 @@ function Character:respawn()
     self.warpin = true
     self:current().animations.warp:gotoFrame(1)
     self:current().animations.warp:resume()
-    local msg = string.format("%s %s %s",self.id,"sound","respawn")
-    server:sendtoplayer(msg,"*")
+    --local msg = string.format("%s %s %s",self.id,"sound","respawn")
+    --server:sendtoplayer(msg,"*")
     Timer.add(0.30, function() self.warpin = false end)
 end
 
@@ -146,5 +146,11 @@ function Character:findRelatedCostume( char )
 end
 
 Character:reset()
+
+function Character.new()
+    local character = {}
+    setmetatable(character, Character)
+    return character
+end
 
 return Character
