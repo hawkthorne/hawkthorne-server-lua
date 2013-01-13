@@ -148,7 +148,8 @@ Level.level = true
 function Level.new(name)
     local level = {}
     setmetatable(level, Level)
-    
+    --require ("mobdebug").start()
+
     level.over = false
     level.name = name
 
@@ -180,10 +181,13 @@ function Level.new(name)
     level.doors = {}
 
     for k,v in pairs(level.map.objectgroups.nodes.objects) do
-        node = load_node(v.type)
-        if node then
+        NodeClass = load_node(v.type)
+        if NodeClass then
             v.objectlayer = 'nodes'
-            table.insert( level.nodes, node.new( v, level.collider ) )
+            local node = NodeClass.new( v, level.collider )
+            node.type = v.type
+            node.name = v.name
+            table.insert( level.nodes, node )
         end
         if v.type == 'door' then
             if v.name then

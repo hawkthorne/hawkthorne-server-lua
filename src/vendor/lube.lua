@@ -84,8 +84,10 @@ function lube.bin:unpack_node(s)
         elseif id == "PY" then
             t.position = t.position or {}
             t.position.y = tonumber(value)
+        elseif id == "N" then
+            t[tonumber(index) or index] = tonumber(value)
         else
-            t[tonumber(index) or index] = tonumber(value) or value
+            t[tonumber(index) or index] = value
         end
     end
     return t

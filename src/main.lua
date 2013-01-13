@@ -103,6 +103,9 @@ end
             levels[level].nodes = levels[level].nodes or {}
             --update objects for client(s)
             for i, node in pairs(levels[level].nodes) do
+                if node.type=="npc" then
+                    require("mobdebug").start()
+                end
                 if node.draw and node.position then
                     local objectBundle  = {level = level,
                       x = node.position.x,y = node.position.y,
@@ -112,6 +115,7 @@ end
                       id = i,
                       name = node.name,
                       type = node.type,
+                      person = node.properties and node.properties.person,
                       }
                     server:sendtoip(string.format("%s %s %s", i, 'updateObject', lube.bin:pack_node(objectBundle)), msg_or_ip,  port_or_nil)
                 end
