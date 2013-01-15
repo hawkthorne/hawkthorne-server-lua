@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="46" height="100" tilewidth="24" tileheight="24">
+ <properties>
+  <property name="blue" value="247"/>
+  <property name="green" value="216"/>
+  <property name="offset" value="86"/>
+  <property name="red" value="74"/>
+ </properties>
+ <tileset firstgid="1" name="village-forest" tilewidth="24" tileheight="24">
+  <image source="../images/tilesets/village-forest.png" width="288" height="216"/>
+ </tileset>
+ <layer name="clouds2" width="46" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztztEJACAIQMEWKxqt0RotpRmCojt4H4KgpcBfatR2I4t5vHA/9nrbzSzmefLP2+4DAAAAAAAAAAAAAAAAAAAAwGsWZBQNUQ==
+  </data>
+ </layer>
+ <layer name="clouds" width="46" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt0cEJgDAMQNEuZnG0jtbRDPQqVdT04nsQyCn/kFLgvi2mjmmxt+zGV524sdcxPfb+9t5VI7Nz0k3/yaz5tLviJ7Pmyi4AAAAAAAAAAAAAAAAAAAAA/3QAiyUXKQ==
+  </data>
+ </layer>
+ <layer name="mountains" width="46" height="100">
+  <properties>
+   <property name="parallax" value="0.9"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt0sEJhDAURdGU4sIyLM5SLHWUAdEhhBcRZOQcCLoQ/g3fUoC3m0oZ1rM83dFjax7X5/h9Xx5q2M7c8f3e3NN+536m8+w5mf3bnLSn+0nudmxO2lvNraZ0P8ndas2t9qS5NjPdT3K3VnOtvaf5ODPdz9V/DwAAAAAAAAAAAAAAAAAAAP7JByq4JZE=
+  </data>
+ </layer>
+ <layer name="overlay" width="46" height="100">
+  <properties>
+   <property name="parallax" value="0.9"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt0csJxDAMBUC3lu+2sf1XEV18V4QgJMzAAx0EMs9jAF/xG+NfydPvPuMNlXS/425fR8yVdP/L3b72mCvJ3unub+5vMVeSvdPd39xfY64ke6e7v7m/xFxJ9k62PwAAAAAAAAAAAAAAAAAAAHizC8xak+0=
+  </data>
+ </layer>
+ <layer name="bg_floor2" width="46" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztzkERADAIACCL2r+GHfaYekICIgAAAAAAAAAAAAAAAAAAAAC4ILsDj7z/2vqGiQqpigF1
+  </data>
+ </layer>
+ <layer name="bg_floor" width="46" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt1LEJgFAQRMHD8swsQGu1NCswE9z9zIOBCze6GUmSpKyOUidAgS1gAwAAAABr2l/udE1b7Qa+sMK/btoNAAAAAAAAia6Z++8Ndudr3Q2JHsHvvrI=
+  </data>
+ </layer>
+ <layer name="floor" width="46" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztm1FygjAQhvPoMbhFfeTZh071UavjS0dn9BAcxaN4FI/SpBJdlyTsAkmg7j/zjyUs4ZuQLARSpUQikUgkEolEIpFIlEI/xLglwysmw/F5bGWty6pAbEWJNdoyvGNy63Pv62Mra112g9ugfO8ou70T9/x+fIN73pNbobI+3CvUt0y/PGh/OHwAMaE+H+L2xLK5d81r99e+rvbeoRgu95D9ZChueN02jnywUc28YWNxfEpuRz2dba9NKm5fG3FVcwfl40YxODY6d1vM1LhNLgP9xI6rzvf/VNyofz9+OYZtnqmfdDpvbu6u583B7boHTMFD3SNS2rR3boZ34w7l5Nx8Le3tNHduk1NT5LZzmalxG6Vq7y9Fvm+Y2Gos3N+KPOZN7HVM3IzYylVOfVY9KnVZ6N+FenkP1XiOTcXty4PYS8AN5umPa4PjhTvMvdb9fxmw7hvXMXLD9mxzV25G/mvNhym5dduVHZ9JGu2emLuzAvmQxQ2Ppeb6obnrcXmh5us1Oj4Xt1KPfFJaw/yh/97DfZ8j4jZzZ0Y/KeCx/5Ub5D/ycwWyNx/G5Ab5j3x/RvY+H9bjknQf4I7LPv3DUVc1VF3C3S7hFm6KLHePnJrVIpFovEJz1sb4pbyni1mfT/U7u2vtEpub74euz6fT/Vw3n0+M85x1LKW+8xDgIpGILMf6uBe71mLiNZswBu+Lxd22zsq8H3OUFTjG1gfn4tvI3KH9kAmUFb4YvC+W2rhd6/HwOjwY41rTF0NDrkNJKeGOq0DeY38nTKlA3hv1t/5d4JlV7ytz8/m0en4zLLHHzI0Fx6Vwx5dwx9VMc87AtnDH1VS5C81ZgO3Y3NT3zYF5Fdst/1tHMme9j6Os6PI90lUXtz6qKPOqPnX1qY97rpzcv65SCuU=
+  </data>
+ </layer>
+ <layer name="foreground" width="46" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztm01uwyAQRpG6yS4HyCY36LKLXMH7Nuv+nKNHyVFylB6lM4qtIDfGw4BnQP2ehKJIDjyNMeCBhAAAAAAAcOOTypfDb3N4NmhjizbhbdsmvG3b7Mk7HqtOlVxyOAWbsfIRQwjfr05tl9Cj95mc3zr0ZnqMN9Or9wd5v1Px9gD14H44eEso6MWbn/XYk71pvOVxt2keeW8V73lbqevWPOAt81nrg+ebT7Y3zQ88T6hJvaPz/COpe5ynkh7SugAAAMjY0bi685ZQUOrtkVtiWvOW5tiP5H0saMcr3qXAu5yXqKzRkncO85yv1d7VlvR6L+BtC7xt6dXbY18sl15jC29bvLwlOb4U8M5j8tbuAdTw1qwlJTnVFKXrWTzXtsDblta9h4V9/9bXYEveW1HrPlqfEYE3vCXA286b10i1xlec3bojzR2D/w36CQCglEMIl/1Y1q6djzde4w87P9HnVOj71UklC4pxiL33xmsebV6S4vvHe6xLdMY0RjNvLXlLzrjGMS/x1rCUT5V4c8zJ94fL4f4/GFNvTbyldeUi6TctekuI89dx7llzDnh6l8L5YQB0/AJaCmj5
+  </data>
+ </layer>
+ <layer name="leaves" width="46" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztm0FuwjAQRQ1S2aVS2YVVrtGuegcqtV2Vo+QoHKVH4SgdK7E0jGzHhDge0/+kES1Y8Bg5HjJxjAEAAAAAABo5GHN+HoP+7kr7cHbG9E8UO/G8dd7Sowty71eXi7AnnxeKvXiePM1WhLac+/B5a8u5D8ptld4WmfNavG3OyfViI+fntBUcNz42pg73w1APft3/G6PfndcF5+68G6XHj6xlzl27d6gmlPam+XluxmjZ/HWs7T3l48a4z2fH2dXYUC2j973YaBf2bsz0scPHxMbKnNN3OS3pGnIKebcmzZvXspzOxqR5y3Ea1od2cJicg3xcjvl6D0eKjyF6GcdEz9chksYuxY8ZJiVFL4Ne678oPhXlGQDLWBM7G6GaqI2UGn0Lod7G0qTW6FRCvY17kfnw1WhNNcPhy0dqLdfGWKNPNjTmGgAAAAD/G9ZX6zT3pB3O1/ObtisqNoHv/KGG37XwXhff+VoN3hZfztc8/5nbCyjdU83VCwAATMOvLZZ2uQW+3mojthZr9o6txZq9Y9TqzetyaRegG3vd+K20BAAAKIHq53stfT2HdRZ9j6D/Wtf+U2iEd6xno+l83+ddST/V6z23T8bv38l5D8+UdxvZ3+pzlntZc90LE/Pme3pS3H17h5e8N4OvC6F+ajvs+b1p3vj2Di/pLdcFmXPnOGdfzJr3HoX6qXO8+d5htoc4i3eI1L25j8D3g3+/3JTYvwwAqJM/ZXd6Xw==
+  </data>
+ </layer>
+ <objectgroup name="nodes" width="46" height="100">
+  <object type="liquid" x="264" y="2328" width="96" height="72">
+   <properties>
+    <property name="drag" value="true"/>
+    <property name="drown" value="true"/>
+    <property name="mask" value="true"/>
+    <property name="opacity" value="0.9"/>
+    <property name="speed" value="0.15"/>
+    <property name="sprite" value="images/water.png"/>
+   </properties>
+  </object>
+  <object type="liquid" x="720" y="2328" width="120" height="72">
+   <properties>
+    <property name="drag" value="true"/>
+    <property name="drown" value="true"/>
+    <property name="mask" value="true"/>
+    <property name="opacity" value="0.9"/>
+    <property name="speed" value="0.15"/>
+    <property name="sprite" value="images/water.png"/>
+   </properties>
+  </object>
+  <object type="liquid" x="696" y="480" width="120" height="120">
+   <properties>
+    <property name="drag" value="true"/>
+    <property name="drown" value="true"/>
+    <property name="mask" value="true"/>
+    <property name="opacity" value="0.9"/>
+    <property name="speed" value="0.15"/>
+    <property name="sprite" value="images/water.png"/>
+   </properties>
+  </object>
+  <object type="liquid" x="744" y="1872" width="96" height="48">
+   <properties>
+    <property name="drag" value="true"/>
+    <property name="drown" value="true"/>
+    <property name="mask" value="true"/>
+    <property name="opacity" value="0.9"/>
+    <property name="speed" value="0.15"/>
+    <property name="sprite" value="images/water.png"/>
+   </properties>
+  </object>
+  <object type="liquid" x="960" y="1872" width="48" height="48">
+   <properties>
+    <property name="drag" value="true"/>
+    <property name="drown" value="true"/>
+    <property name="mask" value="true"/>
+    <property name="opacity" value="0.9"/>
+    <property name="speed" value="0.15"/>
+    <property name="sprite" value="images/water.png"/>
+   </properties>
+  </object>
+  <object type="climbable" x="864" y="288" width="24" height="168"/>
+  <object type="climbable" x="168" y="288" width="24" height="168"/>
+  <object type="climbable" x="768" y="1008" width="24" height="168"/>
+  <object type="climbable" x="936" y="1176" width="24" height="168"/>
+  <object type="climbable" x="816" y="1344" width="24" height="192"/>
+  <object type="climbable" x="96" y="1536" width="24" height="144"/>
+  <object type="movingplatform" x="288" y="1704" width="48" height="24">
+   <properties>
+    <property name="line" value="line_1"/>
+    <property name="offset_x" value="0"/>
+    <property name="offset_y" value="0"/>
+    <property name="speed" value="0.7"/>
+    <property name="sprite" value="images/forestplatform.png"/>
+    <property name="start" value="0"/>
+   </properties>
+  </object>
+  <object type="climbable" x="624" y="1680" width="24" height="168"/>
+ </objectgroup>
+ <objectgroup name="wall" width="46" height="100" opacity="0.9">
+  <object x="552" y="456" width="144" height="144"/>
+  <object x="816" y="456" width="144" height="144"/>
+  <object x="0" y="1080" width="264" height="96"/>
+  <object x="312" y="1080" width="48" height="192"/>
+  <object x="360" y="1080" width="72" height="24"/>
+  <object x="0" y="1176" width="72" height="96"/>
+  <object x="0" y="1272" width="168" height="48"/>
+  <object x="216" y="1272" width="120" height="48"/>
+  <object x="312" y="1320" width="48" height="96"/>
+  <object x="0" y="1320" width="72" height="96"/>
+  <object x="733" y="1847" width="10" height="84"/>
+  <object x="744" y="1921" width="107" height="11"/>
+  <object x="840" y="1849" width="9" height="71"/>
+  <object x="951" y="1847" width="7" height="87"/>
+  <object x="960" y="1921" width="55" height="14"/>
+  <object x="1009" y="1848" width="10" height="74"/>
+  <object x="360" y="2304" width="360" height="96"/>
+  <object x="840" y="2304" width="264" height="96"/>
+  <object x="0" y="2304" width="264" height="96"/>
+ </objectgroup>
+ <objectgroup name="movement" width="46" height="100">
+  <object name="line_1" x="312" y="1704">
+   <polyline points="0,0 168,0"/>
+  </object>
+ </objectgroup>
+ <objectgroup name="platform" width="46" height="100">
+  <object x="0" y="288" width="1104" height="24"/>
+  <object x="480" y="600" width="72" height="24"/>
+  <object x="72" y="552" width="336" height="24"/>
+  <object x="0" y="456" width="288" height="24"/>
+  <object x="96" y="720" width="336" height="24"/>
+  <object x="0" y="912" width="168" height="24"/>
+  <object x="0" y="816" width="1104" height="24"/>
+  <object x="696" y="1008" width="288" height="24"/>
+  <object x="72" y="1392" width="240" height="24">
+   <properties>
+    <property name="drop" value="false"/>
+   </properties>
+  </object>
+  <object x="648" y="1176" width="384" height="24"/>
+  <object x="600" y="1344" width="480" height="24"/>
+  <object x="0" y="1536" width="1104" height="24"/>
+  <object x="72" y="1680" width="192" height="24"/>
+  <object x="528" y="1680" width="216" height="24"/>
+  <object x="1056" y="1752" width="48" height="24"/>
+  <object x="1008" y="1848" width="96" height="24"/>
+  <object x="840" y="1848" width="120" height="24"/>
+  <object x="528" y="1848" width="216" height="24"/>
+  <object x="456" y="1872" width="48" height="24"/>
+  <object x="456" y="1944" width="48" height="24"/>
+  <object x="432" y="2016" width="192" height="24"/>
+  <object x="192" y="2256" width="48" height="24"/>
+  <object x="672" y="2088" width="24" height="24"/>
+  <object x="768" y="2088" width="24" height="24"/>
+  <object x="840" y="2160" width="48" height="24"/>
+  <object x="492" y="1488" width="35" height="23"/>
+  <object x="588" y="769" width="216" height="20"/>
+  <object x="35" y="697" width="36" height="21"/>
+  <object x="480" y="505" width="35" height="23"/>
+  <object x="480" y="2209" width="36" height="22"/>
+  <object x="108" y="2209" width="35" height="23"/>
+  <object x="1008" y="744" width="48" height="24"/>
+  <object x="48" y="984" width="48" height="24"/>
+  <object x="504" y="1128" width="72" height="24"/>
+  <object x="936" y="2232" width="48" height="24"/>
+ </objectgroup>
+</map>
