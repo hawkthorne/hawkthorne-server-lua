@@ -104,6 +104,7 @@ function lube.bin:pack_node(t)
     local s = ""
     for i,v in pairs(t) do
         local id
+        
         if type(v) == "string" then
             id = "S"
             s = s..tostring(id .. lube.bin.one .. i .. lube.bin.one .. tostring(v) .. lube.bin.null)

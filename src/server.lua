@@ -26,7 +26,9 @@ function Server.getSingleton()
 end
 
 function Server:addNewClient(entity,ip,port)
-    if not self.clients[entity] then self.clients[entity] = {ip = ip,port=port} end
+    if not self.clients[entity] then 
+        self.clients[entity] = {ip = ip,port=port}
+    end
 end
 
 function Server:getIp(entity)

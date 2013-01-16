@@ -16,7 +16,7 @@ healthbar:setFilter('nearest', 'nearest')
 local Server = require 'server'
 local server = Server.getSingleton()
 local Inventory = require('inventory')
-local ach = (require 'achievements').new()
+--local ach = (require 'achievements').new()
 
 local healthbarq = {}
 
@@ -511,7 +511,7 @@ function Player:die(damage)
     server:sendtoplayer(msg,"*")
     self.rebounding = true
     self.invulnerable = true
-    ach:achieve('damage', damage)
+    --ach:achieve('damage', damage)
 
     if damage ~= nil then
         self.healthText.x = self.position.x + self.width / 2
@@ -525,7 +525,7 @@ function Player:die(damage)
         self.dead = true
         self.character.state = 'dead'
         self.lives = self.lives - 1
-        ach:achieve('die')
+        --ach:achieve('die')
         -- sound.stopMusic()
         local msg = string.format("%s %s %s",self.id,"sound","death")
         server:sendtoplayer(msg,"*")

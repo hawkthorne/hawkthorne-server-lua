@@ -22,7 +22,7 @@ local Floorspaces = require 'floorspaces'
 local Platform = require 'nodes/platform'
 local Wall = require 'nodes/wall'
 
-local ach = (require 'achievements').new()
+--local ach = (require 'achievements').new()
 
 local function limit( x, min, max )
     return math.min(math.max(x,min),max)
@@ -148,7 +148,7 @@ Level.level = true
 function Level.new(name)
     local level = {}
     setmetatable(level, Level)
-    --require ("mobdebug").start()
+    require ("mobdebug").start()
 
     level.over = false
     level.name = name
@@ -185,8 +185,9 @@ function Level.new(name)
         if NodeClass then
             v.objectlayer = 'nodes'
             local node = NodeClass.new( v, level.collider )
-            node.type = v.type
-            node.name = v.name
+            node.super_type = v.type
+            if(v.name=="") then v.name = nil end
+            node.name = v.name or v.enemytype
             table.insert( level.nodes, node )
         end
         if v.type == 'door' then
@@ -239,7 +240,7 @@ end
 
 function Level:enter( previous, door , player)
     
-    ach:achieve('enter ' .. self.name)
+    --ach:achieve('enter ' .. self.name)
     self.players[player.id] = player
     --only restart if it's an ordinary level
     if previous.level or previous==Gamestate.get('overworld') then
@@ -307,7 +308,7 @@ function Level:update(dt)
     for _,player in pairs(self.players) do
         player:update(dt)
     end
-    ach:update(dt)
+    --ach:update(dt)
  
     --TODO:remove the double nested loop
     --seems disastrous
@@ -354,7 +355,7 @@ function Level:draw()
     
     self.player.inventory:draw(self.player.position)
     self.hud:draw( self.player )
-    ach:draw()
+    --ach:draw()
 end
 
 -- draws the nodes based on their location in the y axis
@@ -419,7 +420,7 @@ function Level:leave(player)
     self.collider:remove(player.bb)
     player.bb = nil
     --assert(nil,"Need to associate a player with leaving")
-    ach:achieve('leave ' .. self.name)
+    --ach:achieve('leave ' .. self.name)
     for i,node in ipairs(self.nodes) do
         if node.leave then node:leave() end
         if node.collide_end then

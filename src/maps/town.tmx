@@ -77,44 +77,17 @@
     <property name="to" value="main"/>
    </properties>
   </object>
-  <object type="npc" x="480" y="216" width="48" height="48">
-   <properties>
-    <property name="person" value="hilda"/>
-   </properties>
-  </object>
-  <object type="achievement" x="192" y="48" width="24" height="48">
-   <properties>
-    <property name="action" value="set"/>
-    <property name="label" value="town floor-contacts -&gt;"/>
-    <property name="value" value="0"/>
-   </properties>
-  </object>
-  <object type="achievement" x="72" y="48" width="24" height="48">
-   <properties>
-    <property name="action" value="achieve"/>
-    <property name="label" value="cross town &lt;-"/>
-   </properties>
-  </object>
-  <object type="achievement" x="1416" y="48" width="24" height="48">
-   <properties>
-    <property name="action" value="achieve"/>
-    <property name="label" value="cross town -&gt;"/>
-   </properties>
-  </object>
-  <object type="achievement" x="1296" y="48" width="24" height="48">
-   <properties>
-    <property name="action" value="set"/>
-    <property name="label" value="town floor-contacts &lt;-"/>
-    <property name="value" value="0"/>
-   </properties>
-  </object>
-  <object type="achievement" x="-1" y="258" width="1440" height="48">
-   <properties>
-    <property name="action" value="achieve"/>
-    <property name="label" value="town floor-contacts"/>
-   </properties>
-  </object>
   <object type="climbable" x="558" y="169" width="16" height="94"/>
+  <object type="enemy" x="134" y="40" width="45" height="52">
+   <properties>
+    <property name="enemytype" value="manicorn"/>
+   </properties>
+  </object>
+  <object type="enemy" x="427" y="171" width="25" height="23">
+   <properties>
+    <property name="enemytype" value="hippy"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup name="floor" width="60" height="14">
   <object x="0" y="264" width="1440" height="72"/>

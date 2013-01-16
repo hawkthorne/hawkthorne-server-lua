@@ -1,7 +1,6 @@
 local camera = require 'camera'
 local window = require 'window'
 local cheats = require 'cheat'
-local gamestate = require 'vendor/gamestate'
 
 local AchievementTracker = {}
 AchievementTracker.__index = AchievementTracker
@@ -56,8 +55,8 @@ const_times.fadeout = const_times.total * 4/5
 ---
 -- Return the currently active level
 -- @return level
-function CurrentLevel()
-    return gamestate.currentState()
+function AchievementTracker:CurrentLevel()
+    return player.level
 end
 
 ---
@@ -72,9 +71,11 @@ end
 ---
 -- Create a new tracker for achievements.
 -- @return tracker
-function AchievementTracker.new()
+function AchievementTracker.new(player)
+    assert(player,"achievement tracker requires a player")
     local tracker = {}
     setmetatable(tracker, AchievementTracker)
+    tracker.player = player
 
     return tracker
 end
@@ -209,7 +210,7 @@ end
 -- @return nil
 function AchievementTracker:onAchieve(label)
     local count = self:getCount(label)
-    local current_level = CurrentLevel()
+    local current_level = self:CurrentLevel()
     local level_name = current_level.name
 
     -- Room entering and anticheat code
