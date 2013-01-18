@@ -55,7 +55,7 @@ end
 function Server:sendtoplayer(message,player_entity)
     assert(type(player_entity)=="string","String required")
     if player_entity=="*" and self.clients then
-        print("broadcasting: ".. message)
+        print("broadcasting: ")
         for k,v in pairs(self.clients) do
             self:sendtoip(message, v.ip, v.port or port)
         end

@@ -27,8 +27,8 @@ function Climbable:collide( node, dt, mtv_x, mtv_y )
     local self_base = self.position.y + self.height
 
     if not player.isClimbing then
-        if ( controls.isDown('UP') and player_base > self.position.y + 10 ) or
-           ( controls.isDown('DOWN') and player_base < self_base - 10 ) then
+        if ( player.key_down[ 'UP' ] and player_base > self.position.y + 10 ) or
+           ( player.key_down[ 'DOWN' ] and player_base < self_base - 10 ) then
             self:grab( player )
         end
     end
@@ -43,13 +43,13 @@ function Climbable:collide( node, dt, mtv_x, mtv_y )
     player.position.x = ( self.position.x + self.width / 2 ) - player.width / 2
     player.since_solid_ground = 0
 
-    if controls.isDown('UP') and not player.controlState:is('ignoreMovement') then
+    if player.key_down[ 'UP' ] and not player.controlState:is('ignoreMovement') then
         player.position.y = player.position.y - ( dt * self.climb_speed )
-    elseif controls.isDown('DOWN') and not player.controlState:is('ignoreMovement') then
+    elseif player.key_down[ 'DOWN' ] and not player.controlState:is('ignoreMovement') then
         player.position.y = player.position.y + ( dt * self.climb_speed )
     end
 
-    if player_base > self_base - 5 and controls.isDown('DOWN') then
+    if player_base > self_base - 5 and player.key_down[ 'DOWN' ] then
         self:release( player )
     end
 end
