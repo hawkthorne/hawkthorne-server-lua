@@ -43,8 +43,7 @@ end
   function love.load(arg)
     server_print("Beginning hawkthorne server loop.")
     table.remove(arg, 1)
-    --require ("mobdebug").start()
-    
+
     love.graphics.setDefaultImageFilter('nearest', 'nearest')
     camera:setScale(window.scale, window.scale)
     love.graphics.setMode(window.screen_width, window.screen_height)
@@ -52,7 +51,7 @@ end
   end
 
   function love.update(dt)
-    dt = math.min(0.033333333, dt)
+    local dt = math.min(0.033333333, dt)
     for level_name,level in pairs(levels) do
         level:update(dt)
     end
@@ -62,11 +61,11 @@ end
     -- counterpart, sendto) in the client. there's nothing special about the
     -- functions to prevent it, indeed. send/receive are just convenience
     -- functions, sendto/receive from are the real workers.]
-    data, msg_or_ip, port_or_nil = server:receivefrom()
+    local data, msg_or_ip, port_or_nil = server:receivefrom()
     if data then
         io.flush()
         -- more of these funky match patterns!
-        entity, cmd, parms = data:match("^(%S*) (%S*) (.*)")
+        local entity, cmd, parms = data:match("^(%S*) (%S*) (.*)")
         if cmd == 'keypressed' then
             local button = parms:match("^(%S*)")
             local player = players[entity]
@@ -162,7 +161,7 @@ end
         elseif cmd == 'enterLevel' then
             local level = parms:match("^(%S*)")
             players[entity].level = level
-            Gamestate.switch(Gamestate.get(players[entity].level),nil,players[entity])
+            --Gamestate.switch(Gamestate.get(players[entity].level),nil,players[entity])
         elseif cmd == 'unregister' then
             server_print("unregistering a player:", entity)
             server_print("msg_or_ip:", msg_or_ip)
@@ -174,6 +173,9 @@ end
             server_print("unrecognized command:'"..(cmd or 'nil').."'")
             server_print()
         end
+    elseif msg_or_ip == 'closed' then
+        --ignoring
+        --TODO: deal with close correctly
     elseif msg_or_ip ~= 'timeout' then
         error("Unknown network error: "..tostring(msg))
     end

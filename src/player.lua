@@ -533,10 +533,9 @@ function Player:die(damage)
         self.respawn = Timer.add(3, function()
             self:revive()
             if self.lives <= 0 then
-                server:sendtoplayer(string.format("%s %s %s %s", player.id, 'stateSwitch','UNKNOWN','gameover'),player.id)
+                server:sendtoplayer(string.format("%s %s %s %s", self.id, 'stateSwitch',self.level,'gameover'),"*")
             else
-                local spawnLevel = Gamestate.currentState().spawn
-                Gamestate.switch(spawnLevel, nil, player)
+                server:sendtoplayer(string.format("%s %s %s %s", self.id, 'stateSwitch',self.level,Gamestate.get(self.level).spawn),"*")
             end
         end)
     else

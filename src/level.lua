@@ -148,8 +148,7 @@ Level.level = true
 function Level.new(name)
     local level = {}
     setmetatable(level, Level)
-    require ("mobdebug").start()
-
+    
     level.over = false
     level.name = name
 

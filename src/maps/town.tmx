@@ -78,11 +78,6 @@
    </properties>
   </object>
   <object type="climbable" x="558" y="169" width="16" height="94"/>
-  <object type="enemy" x="134" y="40" width="45" height="52">
-   <properties>
-    <property name="enemytype" value="manicorn"/>
-   </properties>
-  </object>
   <object type="enemy" x="427" y="171" width="25" height="23">
    <properties>
     <property name="enemytype" value="hippy"/>
