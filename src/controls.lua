@@ -45,6 +45,7 @@ function controls.getKey( button )
 end
 
 function controls.isDown( button )
+    assert(nil,"deprecated controls.isDown")
     local key = buttonmap[button]
 
     if key == nil then

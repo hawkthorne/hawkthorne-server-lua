@@ -16,7 +16,6 @@ if correctVersion then
   local sound = require 'vendor/TEsound'
   local window = require 'window'
   local controls = require 'controls'
-  local hud = require 'hud'
   local cli = require 'vendor/cliargs'
   local mixpanel = require 'vendor/mixpanel'
   local character = require 'character'

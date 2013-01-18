@@ -5,11 +5,9 @@ local tmx = require 'vendor/tmx'
 local HC = require 'vendor/hardoncollider'
 local Timer = require 'vendor/timer'
 local Tween = require 'vendor/tween'
-local camera = require 'camera'
 local window = require 'window'
 local sound = require 'vendor/TEsound'
 local controls = require 'controls'
-local HUD = require 'hud'
 local music = {}
 
 local node_cache = {}
@@ -170,7 +168,7 @@ function Level.new(name)
 
     level:panInit()
 
-    level.player = Player.factory(level.collider)
+    --level.player = Player.factory(level.collider)
     level.boundary = {
         width =level.map.width  * level.map.tilewidth,
         height=level.map.height * level.map.tileheight
@@ -255,15 +253,11 @@ function Level:enter( previous, door , player)
         height = self.map.height * self.map.tileheight
     }
 
-    camera.max.x = self.map.width * self.map.tilewidth - window.width
-
     setBackgroundColor(self.map)
 
     --sound.playMusic( self.music )
 
-    self.hud = HUD.new(self)
-
-    if door then
+   if door then
         player.position = {
             x = math.floor(self.doors[ door ].x + self.doors[ door ].node.width / 2 - player.width / 2),
             y = math.floor(self.doors[ door ].y + self.doors[ door ].node.height - player.height)
@@ -273,7 +267,7 @@ function Level:enter( previous, door , player)
         end
         if self.doors[ door ].node then
             self.doors[ door ].node:show()
-            self.player.freeze = false
+            player.freeze = false
         end
     end
 
@@ -321,11 +315,6 @@ function Level:update(dt)
 
     self:updatePan(dt)
 
-    local x = self.player.position.x + self.player.width / 2
-    local y = self.player.position.y - self.map.tilewidth * 4.5
-    camera:setPosition( math.max(x - window.width / 2, 0),
-                        limit( limit(y, 0, self.offset) + self.pan, 0, self.offset ) )
-
     Timer.update(dt)
 end
 
@@ -353,7 +342,6 @@ function Level:draw()
     end
     
     self.player.inventory:draw(self.player.position)
-    self.hud:draw( self.player )
     --ach:draw()
 end
 
@@ -452,43 +440,47 @@ function Level:keypressed( button , player)
 end
 
 function Level:panInit()
-    self.pan = 0
     self.pan_delay = 1
     self.pan_distance = 80
     self.pan_speed = 140
-    self.pan_hold_up = 0
-    self.pan_hold_down = 0
 end
 
+--this should superficially change the sprite state on the server-side
+--this should move the camera on the client-side
 function Level:updatePan(dt)
-    local up = controls.isDown( 'UP' ) and not self.player.controlState:is('ignoreMovement')
-    local down = controls.isDown( 'DOWN' ) and not self.player.controlState:is('ignoreMovement')
+    for _,player in pairs(self.players) do
+        player.pan = player.pan or 0
+        player.pan_hold_up = player.pan_hold_up or 0
+        player.pan_hold_down = player.pan_hold_down or 0
+        local up = player.key_down['UP'] and not player.controlState:is('ignoreMovement')
+        local down = player.key_down['DOWN'] and not player.controlState:is('ignoreMovement')
 
-    if up and self.player.velocity.x == 0 then
-        self.pan_hold_up = self.pan_hold_up + dt
-    else
-        self.pan_hold_up = 0
-    end
+        if up and player.velocity.x == 0 then
+            player.pan_hold_up = player.pan_hold_up + dt
+        else
+            player.pan_hold_up = 0
+        end
     
-    if down and self.player.velocity.x == 0 then
-        self.pan_hold_down = self.pan_hold_down + dt
-    else
-        self.pan_hold_down = 0
-    end
+        if down and player.velocity.x == 0 then
+            player.pan_hold_down = player.pan_hold_down + dt
+        else
+            player.pan_hold_down = 0
+        end
 
-    if up and self.pan_hold_up >= self.pan_delay then
-        self.player.gaze_state = 'gaze'
-        self.pan = math.max( self.pan - dt * self.pan_speed, -self.pan_distance )
-    elseif down and self.pan_hold_down >= self.pan_delay then
-        --we currently have no sprite for looking down
-        --self.player.crouch_state = 'gaze'
-        self.pan = math.min( self.pan + dt * self.pan_speed, self.pan_distance )
-    else
-        self.player.gaze_state = self.player:getSpriteStates()[self.player.current_state_set].gaze_state
-        if self.pan > 0 then
-            self.pan = math.max( self.pan - dt * self.pan_speed, 0 )
-        elseif self.pan < 0 then
-            self.pan = math.min( self.pan + dt * self.pan_speed, 0 )
+        if up and player.pan_hold_up >= self.pan_delay then
+            player.gaze_state = 'gaze'
+            player.pan = math.max( player.pan - dt * self.pan_speed, -self.pan_distance )
+        elseif down and player.pan_hold_down >= self.pan_delay then
+            --we currently have no sprite for looking down
+            --player.crouch_state = 'gaze'
+            player.pan = math.min( player.pan + dt * self.pan_speed, self.pan_distance )
+        else
+            player.gaze_state = player:getSpriteStates()[player.current_state_set].gaze_state
+            if player.pan > 0 then
+                player.pan = math.max( player.pan - dt * self.pan_speed, 0 )
+            elseif player.pan < 0 then
+                player.pan = math.min( player.pan + dt * self.pan_speed, 0 )
+            end
         end
     end
 end

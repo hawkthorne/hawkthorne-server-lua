@@ -1,5 +1,4 @@
 local Timer = require 'vendor/timer'
-local controls = require 'controls'
 
 local Platform = {}
 Platform.__index = Platform
@@ -39,11 +38,12 @@ function Platform.new(node, collider)
 end
 
 function Platform:update( dt )
-    if controls.isDown( 'DOWN' ) then
-        self.down_dt = 0
-    else
-        self.down_dt = self.down_dt + dt
-    end
+    --controls.isDown is deprecated in multiplayer
+    -- if controls.isDown( 'DOWN' ) then
+        -- self.down_dt = 0
+    -- else
+        -- self.down_dt = self.down_dt + dt
+    -- end
 end
 
 function Platform:collide( node, dt, mtv_x, mtv_y )
