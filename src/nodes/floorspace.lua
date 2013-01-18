@@ -1,4 +1,3 @@
-local controls = require 'controls'
 local window = require 'window'
 local Floorspaces = require 'floorspaces'
 local game = require 'game'
@@ -75,6 +74,7 @@ Floorspace.__index = Floorspace
 Floorspace.isFloorspace = true
 
 function Floorspace.new(node, level)
+    error("Floorspace needs to be reimplemented")
     local floorspace = {}
     setmetatable(floorspace, Floorspace)
 

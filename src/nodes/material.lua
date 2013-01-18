@@ -4,7 +4,6 @@
 -- Created by HazardousPeach
 -----------------------------------------------
 
-local controls = require 'controls'
 local Item = require 'items/item'
 
 local Material = {}
@@ -70,7 +69,7 @@ function Material:update()
     if not self.exists then
         return
     end
-    if controls.isDown( 'UP' ) and self.touchedPlayer and not self.touchedPlayer.controlState:is('ignoreMovement') then
+    if self.touchedPlayer.key_down['UP'] and self.touchedPlayer and not self.touchedPlayer.controlState:is('ignoreMovement') then
         local itemNode = require( 'items/materials/' .. self.name )
         itemNode.type = 'material'
         local item = Item.new(itemNode)

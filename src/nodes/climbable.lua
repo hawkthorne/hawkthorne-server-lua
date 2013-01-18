@@ -1,4 +1,3 @@
-local controls = require 'controls'
 local game = require 'game'
 
 local Climbable = {}

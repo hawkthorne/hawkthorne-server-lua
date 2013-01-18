@@ -7,7 +7,6 @@ local Timer = require 'vendor/timer'
 local Tween = require 'vendor/tween'
 local window = require 'window'
 local sound = require 'vendor/TEsound'
-local controls = require 'controls'
 local music = {}
 
 local node_cache = {}
