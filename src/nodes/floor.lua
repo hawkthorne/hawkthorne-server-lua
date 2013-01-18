@@ -51,6 +51,9 @@ function Floor:collide(node, dt, mtv_x, mtv_y)
     end
 
     local _, wy1, _, wy2  = self.bb:bbox()
+    if not node.bb then
+        require("mobdebug").start()
+    end
     local px1, py1, px2, py2 = node.bb:bbox()
     local distance = math.abs(node.velocity.y * dt) + 0.10
 

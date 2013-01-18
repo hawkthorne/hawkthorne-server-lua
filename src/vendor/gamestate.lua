@@ -81,6 +81,8 @@ function GS.get(name)
 end
 
 function GS.switch(to, ...)
+  error("state switches aren't allowed in the backend")
+  print(debug.traceback())
   assert(to, "Missing argument: Gamestate to switch to")
 
   if type(to) == "string" then

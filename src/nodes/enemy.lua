@@ -110,7 +110,8 @@ function Enemy:hurt( damage )
     self.state = 'dying'
     self.hp = self.hp - damage
     if self.hp <= 0 then
-        if self.props.splat then self.props.splat( self )end
+        --TODO: reimplement splat so it can work in multiplayer
+        --if self.props.splat then self.props.splat( self )end
         self.collider:setGhost(self.bb)
         Timer.add(self.dyingdelay, function() 
             self:die()
