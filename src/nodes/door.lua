@@ -78,7 +78,7 @@ function Door:switch(player)
     end
 
     local level = Gamestate.get(self.level)
-    local current = Gamestate.currentState()
+    local current = Gamestate.get(player.level)
 
     if current == level and self.level ~= "overworld" then
         player.position = { -- Copy, or player position corrupts entrance data
@@ -88,7 +88,7 @@ function Door:switch(player)
         return
     end
     
-    local old_level = Gamestate.get(player.level)
+    local old_level = current
     old_level.players[player.id]=nil
     --TODO:remove player's attack boundingbbox
     old_level.collider:remove(player.bb)

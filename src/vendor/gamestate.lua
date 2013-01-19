@@ -66,6 +66,8 @@ function GS.load(name)
 end
 
 function GS.currentState()
+  error("gamestate has no notion of currentState in the backend")
+  print(debug.traceback())
   return current
 end
 
