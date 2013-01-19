@@ -21,7 +21,7 @@ function Alarm.new(node, collider)
     alarm.y = node.y
     alarm.bb = collider:addRectangle(node.x, node.y, node.width, node.height)
     alarm.bb.node = alarm
-    alarm.player_touched = false
+    alarm.players_touched = {}
     alarm.fixed = false
     alarm.prompt = nil
     collider:setPassive(alarm.bb)

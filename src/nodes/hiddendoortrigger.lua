@@ -12,7 +12,7 @@ function HiddenDoorTrigger.new(node, collider)
     art.y = node.y
     art.bb = collider:addRectangle(node.x, node.y, node.width, node.height)
     art.bb.node = art
-    art.player_touched = false
+    art.players_touched = {}
     art.fixed = false
     art.prompt = nil
     

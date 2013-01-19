@@ -8,7 +8,7 @@ function RaveSwitch.new(node, collider)
     setmetatable(raveswitch, RaveSwitch)
     raveswitch.bb = collider:addRectangle(node.x, node.y, node.width, node.height)
     raveswitch.bb.node = raveswitch
-    raveswitch.player_touched = false
+    raveswitch.players_touched = {}
     raveswitch.level = node.properties.level
     raveswitch.reenter = node.properties.reenter
     raveswitch.to = node.properties.to

@@ -46,66 +46,76 @@ local function load_node(name)
 end
 
 local function on_collision(dt, shape_a, shape_b, mtv_x, mtv_y)
-    local player, node, node_a, node_b
-    if shape_a.isPlayer and shape_b.isPlayer then return end
+    local node_a, node_b
 
-    if shape_a.player then
-        player = shape_a.player
-        node = shape_b.node
+    if shape_a.player and shape_b.player then
+        node_a = shape_a.player
+        node_b = shape_b.player
+        --if a player possesses multiple bounding boxes
+        -- the following should prevent them from colliding
+        if node_a == node_b then return end
+        node_b.players_touched = node_b.players_touched or {}
+        node_a.players_touched = node_a.players_touched or {}
+        node_b.players_touched[node_a] = true
+        node_a.players_touched[node_b] = true
+    elseif shape_a.player then
+        node_a = shape_a.player
+        node_b = shape_b.node
+        node_b.players_touched = node_b.players_touched or {}
+        node_b.players_touched[node_a] = true
     elseif shape_b.player then
-        player = shape_b.player
-        node = shape_a.node
+        node_b = shape_b.player
+        node_a = shape_a.node
+        node_a.players_touched = node_a.players_touched or {}
+        node_a.players_touched[node_b] = true
     else
         node_a = shape_a.node
         node_b = shape_b.node
     end
 
-    if node then
-        node.player_touched = true
-
-        if node.collide then
-            node:collide(player, dt, mtv_x, mtv_y)
-        end
-    elseif node_a then
-        if node_a.collide then
-            node_a:collide(node_b, dt, mtv_x, mtv_y)
-        end
-        if node_b.collide then
-            node_b:collide(node_a, dt, -mtv_x, -mtv_y)
-        end
+    if node_a.collide then
+        node_a:collide(node_b, dt, mtv_x, mtv_y)
+    end
+    if node_b.collide then
+        node_b:collide(node_a, dt, mtv_x, mtv_y)
     end
 
 end
 
 -- this is called when two shapes stop colliding
 local function collision_stop(dt, shape_a, shape_b)
-    local player, node, node_a, node_b
-    if shape_a.player and shape_b.player then return end
+    local node_a, node_b
 
-    if shape_a.player then
-        player = shape_a.player
-        node = shape_b.node
+    if shape_a.player and shape_b.player then
+        node_a = shape_a.player
+        node_b = shape_b.player
+        --if a player possesses multiple bounding boxes
+        -- the following should prevent them from colliding
+        if node_a == node_b then return end
+        node_b.players_touched = node_b.players_touched or {}
+        node_a.players_touched = node_a.players_touched or {}
+        node_b.players_touched[node_a] = nil
+        node_a.players_touched[node_b] = nil
+    elseif shape_a.player then
+        node_a = shape_a.player
+        node_b = shape_b.node
+        node_b.players_touched = node_b.players_touched or {}
+        node_b.players_touched[node_a] = nil
     elseif shape_b.player then
-        player = shape_b.player
-        node = shape_a.node
+        node_b = shape_b.player
+        node_a = shape_a.node
+        node_a.players_touched = node_a.players_touched or {}
+        node_a.players_touched[node_b] = nil
     else
         node_a = shape_a.node
         node_b = shape_b.node
     end
 
-    if node then
-        node.player_touched = false
-
-        if node.collide_end then
-            node:collide_end(player, dt)
-        end
-    else
-        if node_a.collide_end then
-            node_a:collide_end(node_b, dt)
-        end
-        if node_b.collide_end then
-            node_b:collide_end(node_a, dt)
-        end
+    if node_a.collide_end then
+        node_a:collide_end(node_b, dt)
+    end
+    if node_b.collide_end then
+        node_b:collide_end(node_a, dt)
     end
 end
 
@@ -421,7 +431,8 @@ end
 
 function Level:keypressed( button , player)
     for i,node in ipairs(self.nodes) do
-        if node.player_touched == player and node.keypressed then
+        node.players_touched = node.players_touched or {}
+        if node.players_touched[player] and node.keypressed then
             if node:keypressed( button, player) then
               return true
             end

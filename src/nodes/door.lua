@@ -16,7 +16,7 @@ function Door.new(node, collider)
     --if you can go to a level, setup collision detection
     --otherwise, it's just a location reference
     if door.level then
-        door.player_touched = false
+        door.players_touched = {}
         door.bb = collider:addRectangle(node.x, node.y, node.width, node.height)
         door.bb.node = door
         collider:setPassive(door.bb)
@@ -72,7 +72,7 @@ function Door:switch(player)
         player:drop()
     end
 
-    self.player_touched = false
+    self.players_touched[player] = nil
     if math.abs(wy2 - py2) > 10 or player.jumping then
         return
     end

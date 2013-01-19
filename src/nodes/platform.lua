@@ -37,23 +37,26 @@ function Platform.new(node, collider)
     return platform
 end
 
-function Platform:update( dt )
+function Platform:update( dt, player)
+    assert(player,"platform update requires a node")
+    assert(player.isPlayer,"platform update requires a player")
     --TODO:reimplement platform dropping
     --controls.isDown is deprecated in multiplayer
-    -- if controls.isDown( 'DOWN' ) then
-        -- self.down_dt = 0
-    -- else
-        -- self.down_dt = self.down_dt + dt
-    -- end
+    if player.key_down['DOWN'] then
+        player.down_dt = 0
+    else
+        player.down_dt = player.down_dt or 0
+        player.down_dt = player.down_dt + dt
+    end
 end
 
 function Platform:collide( node, dt, mtv_x, mtv_y )
     if not node.floor_pushback then return end
 
     if node.isPlayer then
-        self.player_touched = true
+        self.players_touched[node] = true
         
-        if self.dropping then
+        if node.platform_dropping then
             return
         end
     end
@@ -80,16 +83,17 @@ end
 
 function Platform:collide_end(node)
     if node.isPlayer then
-        self.player_touched = false
-        self.dropping = false
+        self.players_touched[node] = nil
+        node.platform_dropping = false
     end
 end
 
 function Platform:keypressed( button, player )
+
     if player.controlState:is('ignoreMovement') then return end
-    if self.drop and button == 'DOWN' and self.down_dt > 0 and self.down_dt < 0.15 then
-         self.dropping = true
-         Timer.add( 0.25, function() self.dropping = false end )
+    if self.drop and button == 'DOWN' and player.down_dt > 0 and player.down_dt < 3.0 then
+         player.platform_dropping = true
+         Timer.add( 0.25, function() player.platform_dropping = false end )
     end
 end
 
