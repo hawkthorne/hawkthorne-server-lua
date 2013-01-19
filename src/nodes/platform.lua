@@ -38,6 +38,7 @@ function Platform.new(node, collider)
 end
 
 function Platform:update( dt )
+    --TODO:reimplement platform dropping
     --controls.isDown is deprecated in multiplayer
     -- if controls.isDown( 'DOWN' ) then
         -- self.down_dt = 0
