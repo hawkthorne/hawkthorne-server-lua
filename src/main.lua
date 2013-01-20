@@ -100,18 +100,13 @@ end
             levels[level].nodes = levels[level].nodes or {}
             --update objects for client(s)
             for i, node in pairs(levels[level].nodes) do
-                if node.type=="enemy" then
-                    require("mobdebug").start()
-                end
-                if node.draw and node.position then
+
+                  if node.draw and node.position then
                   local type,name
-                  if node.super_type and node.super_type~="" then
-                    type = node.super_type
-                    name = node.type
-                  else
-                    type = node.type
-                    name = node.name
-                  end
+ 
+                  --note: super_type was created because of inconsistent type use
+                  type = node.super_type
+                  name = node.name
                   
                     local objectBundle  = {level = level,
                       x = node.position.x,y = node.position.y,
@@ -123,7 +118,7 @@ end
                       type = type,
                       person = node.properties and node.properties.person,
                       testVal = node.enemytype,
-                      }
+                    }
                     server:sendtoip(string.format("%s %s %s", i, 'updateObject', lube.bin:pack_node(objectBundle)), msg_or_ip,  port_or_nil)
                 end
             end

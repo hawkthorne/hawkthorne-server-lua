@@ -29,7 +29,7 @@ function Material.new(node, collider)
     material.width = node.width
     material.height = node.height
 
-    material.touchedPlayer = nil
+    material.players_touched = {}
     material.exists = true
 
     return material
@@ -50,7 +50,7 @@ end
 -- @return nil
 function Material:collide(node, dt, mtv_x, mtv_y)
     if node and node.character then
-        self.touchedPlayer = node
+        self.players_touched[node] = true
     end
 end
 
@@ -59,7 +59,7 @@ end
 -- @return nil
 function Material:collide_end(node, dt)
     if node and node.character then
-        self.touchedPlayer = nil
+        self.players_touched[node] = nil
     end
 end
 
@@ -69,13 +69,15 @@ function Material:update()
     if not self.exists then
         return
     end
-    if self.touchedPlayer.key_down['UP'] and self.touchedPlayer and not self.touchedPlayer.controlState:is('ignoreMovement') then
-        local itemNode = require( 'items/materials/' .. self.name )
-        itemNode.type = 'material'
-        local item = Item.new(itemNode)
-        if self.touchedPlayer.inventory:addItem(item) then
-            self.exists = false
-            self.collider:remove(self.bb)
+    for player,_ in pairs(self.players_touched) do
+        if player.key_down['UP'] and not player.controlState:is('ignoreMovement') then
+            local itemNode = require( 'items/materials/' .. self.name )
+            itemNode.type = 'material'
+            local item = Item.new(itemNode)
+            if player.inventory:addItem(item) then
+                self.exists = false
+                self.collider:remove(self.bb)
+            end
         end
     end
 end

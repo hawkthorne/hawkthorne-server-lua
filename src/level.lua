@@ -191,9 +191,17 @@ function Level.new(name)
         if NodeClass then
             v.objectlayer = 'nodes'
             local node = NodeClass.new( v, level.collider )
-            node.super_type = v.type
             if(v.name=="") then v.name = nil end
-            node.name = v.name or v.enemytype
+            print("====")
+            print("v.type=="..v.type)
+            print("v.name=="..(v.name or "<nil>"))
+            print("node.type=="..(node.type or "<nil>"))
+            print("node.name=="..(node.name or "<nil>"))
+            --I'm sorry I had to do this, but the type was being used inconsistently
+            node.super_type = v.type
+            node.name = v.name or node.type
+            print("====")
+            print()
             table.insert( level.nodes, node )
         end
         if v.type == 'door' then
