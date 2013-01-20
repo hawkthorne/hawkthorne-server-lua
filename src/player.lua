@@ -115,7 +115,7 @@ function Player:enter(level)
         self.character.changed = false
         self.health = self.max_health
         self.money = 0
-        self.inventory = Inventory.new( self )
+        --self.inventory = Inventory.new( self )
         self.lives = 3
     end
 

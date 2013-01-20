@@ -146,7 +146,7 @@ end
             players[entity] = Player.new()
             players[entity].id = entity
             --todo:remove town dependence
-            players[entity].level = 'town'
+            players[entity].level = 'overworld'
             players[entity].ip_address = msg_or_ip
             players[entity].character.name=name
             players[entity].character.costume=costume
@@ -154,7 +154,6 @@ end
         elseif cmd == 'enterLevel' then
             local level = parms:match("^(%S*)")
             players[entity].level = level
-            --Gamestate.switch(Gamestate.get(players[entity].level),nil,players[entity])
         elseif cmd == 'unregister' then
             server_print("unregistering a player:", entity)
             server_print("msg_or_ip:", msg_or_ip)
