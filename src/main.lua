@@ -110,7 +110,7 @@ end
                   
                     local objectBundle  = {level = level,
                       x = node.position.x,y = node.position.y,
-                      state = state,
+                      state = node.state,
                       position = node.animation and node:animation().position,
                       direction = node.direction,
                       id = i,
