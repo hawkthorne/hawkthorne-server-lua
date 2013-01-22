@@ -486,7 +486,7 @@ function Inventory:addItem(item)
         return false
     end
     self.pages[pageIndex][slot] = item
-    local msg = string.format("%s %s %s",self.id,"sound","pickup")
+    local msg = string.format("%s %s %s",self.player.id,"sound","pickup")
     server:sendtoplayer(msg,"*")        
     return true
 end
