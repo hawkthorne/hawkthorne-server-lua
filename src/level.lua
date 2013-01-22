@@ -1,5 +1,5 @@
 local Gamestate = require 'vendor/gamestate'
-local Queue = require 'queue'
+local queue = require 'queue'
 local anim8 = require 'vendor/anim8'
 local tmx = require 'vendor/tmx'
 local HC = require 'vendor/hardoncollider'
@@ -157,6 +157,7 @@ function Level.new(name)
     setmetatable(level, Level)
     
     level.over = false
+    level.state = 'idle'  -- TODO: Use state machine
     level.name = name
 
     assert( love.filesystem.exists( "maps/" .. name .. ".lua" ),
@@ -174,7 +175,7 @@ function Level.new(name)
     level.music = getSoundtrack(level.map)
     level.spawn = 'studyroom'
     level.title = getTitle(level.map)
-
+ 
     level:panInit()
 
     --level.player = Player.factory(level.collider)
@@ -183,9 +184,10 @@ function Level.new(name)
         height=level.map.height * level.map.tileheight
     }
 
+    level.transition = transition.new('fade', 0.5)
+    level.events = queue.new()
     level.nodes = {}
     level.doors = {}
-    level.action_queue = Queue.new()
 
     for k,v in pairs(level.map.objectgroups.nodes.objects) do
         NodeClass = load_node(v.type)
@@ -225,6 +227,7 @@ function Level.new(name)
     end
 
     if level.map.objectgroups.floorspace then
+        level.floorspace = true
         for k,v in pairs(level.map.objectgroups.floorspace.objects) do
             v.objectlayer = 'floorspace'
             table.insert(level.nodes, Floorspace.new(v, level))
@@ -253,37 +256,6 @@ function Level:restartLevel()
     Floorspaces:init()
 end
 
----
--- add a function to the Action Queue
--- @param func the function to be added to the queue
--- @param params the parameters that should be passed to the function func
--- @return nil
-function Level:queueAction(func, params)
-    table.insert(self.action_queue,{[func]=params})
-end
----
--- Executes all functions in the action_queue and clears it afterwards
--- @return nil
-function Level:processActionQueue()
-    for _,action in ipairs(self.action_queue.items) do
-        for func,params in pairs(action) do
-            if type(func) == 'function' then
-                --for function without parameters
-                if params == nil then
-                    func()
-                --for function with multiple parameters
-                --may clash with functions that only take one table parameter
-                elseif type(params) == 'table' then
-                    func(unpack(params))
-                --for functions with only one parameter that isnt a table
-                else
-                    func(params)
-                end
-            end
-        end
-    end
-    self.action_queue = Queue.new()
-end
 
 function Level:enter( previous, door , player)
     
@@ -329,9 +301,21 @@ function Level:enter( previous, door , player)
     player:enter(self)
 end
 
-
-
 function Level:init()
+end
+
+local function leaveLevel(level, levelName, doorName)
+  local destination = Gamestate.get(levelName)
+            
+  if level == destination then
+    level.player.position = { -- Copy, or player position corrupts entrance data
+      x = level.doors[doorName].x + level.doors[doorName].node.width / 2 - level.player.width / 2,
+      y = level.doors[doorName].y + level.doors[doorName].node.height - level.player.height
+    }
+    return
+  end
+
+  Gamestate.switch(levelName, doorName)
 end
 
 function Level:update(dt)
@@ -366,12 +350,18 @@ function Level:update(dt)
 
     self.collider:update(dt)
 
-
     self:updatePan(dt)
 
     Timer.update(dt)
     --apply accumulated changes that can't be that can't be executed mid-update
     self:processActionQueue()
+
+    local exited, levelName, doorName = self.events:poll('exit')
+    if exited then
+      leaveLevel(self, levelName, doorName)
+    end
+end
+
 end
 
 function Level:quit()
@@ -379,6 +369,21 @@ function Level:quit()
         Timer.cancel(self.respawn)
     end
 end
+
+function Level:leave()
+  self.state = 'idle'
+end
+
+function Level:exit(levelName, doorName)
+  self.respawn = false
+  if self.state ~= 'idle' then
+    self.state = 'idle'
+    self.transition:backward(function()
+      self.events:push('exit', levelName, doorName)
+    end)
+  end
+end
+
 
 function Level:draw()
     self.background:draw(0, 0)
@@ -479,6 +484,14 @@ function Level:keyreleased( button , player)
 end
 
 function Level:keypressed( button , player)
+    if self.state ~= 'active' then
+        return
+    end
+
+    if button == 'INTERACT' and player.character.state ~= 'idle' then
+        return
+    end
+
     for i,node in ipairs(self.nodes) do
         node.players_touched = node.players_touched or {}
         if node.players_touched[player] and node.keypressed then
