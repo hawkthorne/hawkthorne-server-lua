@@ -56,7 +56,7 @@ function PlayerAttack:collide(node, dt, mtv_x, mtv_y)
                           }
                         }
     if node.hurt then
-        local msg = string.format("%s %s %s",self.id,"sound","punch")
+        local msg = string.format("%s %s %s",self.player.id,"sound","punch")
         server:sendtoplayer(msg,"*")
         local attackSprite = Sprite.new(attackNode, collider)
         table.insert(Gamestate.currentState().nodes,attackSprite)

@@ -153,7 +153,9 @@ end
             print("registered")
         elseif cmd == 'enterLevel' then
             local level = parms:match("^(%S*)")
+            --TODO:remove the necessity of this line
             players[entity].level = level
+            players[entity]:enter(Gamestate.get(level))
         elseif cmd == 'unregister' then
             server_print("unregistering a player:", entity)
             server_print("msg_or_ip:", msg_or_ip)

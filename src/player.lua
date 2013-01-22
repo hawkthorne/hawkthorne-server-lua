@@ -103,6 +103,10 @@ end
 
 function Player:enter(level)
     local collider = level.collider
+    
+    level.players = level.players or {}
+    level.players[self.id] = self
+    self.level = level.name
     --changes that are made if you're dead
     if self.dead then
         self.health = self.max_health
@@ -146,6 +150,11 @@ function Player:enter(level)
     self.currently_held = nil -- Object currently being held by the player
     self.holdable       = nil -- Object that would be picked up if player used grab key
 
+  if level==nil or collider==nil then
+    require("mobdebug").start()
+  end
+  --shouldn't be necessary because level:leave()
+  -- removes bboxes but just in case...
     if self.bb then
         self.collider:remove(self.bb)
         self.bb = nil
@@ -164,8 +173,6 @@ function Player:enter(level)
     self.wielding = false
     self.prevAttackPressed = false
     self.current_hippie = nil
-    
-
 end
 
 ---
@@ -284,6 +291,7 @@ end
 -- @param dt The time delta
 -- @return nil
 function Player:update( dt )
+
     if self:ignoreUpdate() then
         if not self.INITIALIZED then
             --require("mobdebug").start()

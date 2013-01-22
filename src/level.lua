@@ -270,10 +270,11 @@ function Level:enter( previous, door , player)
         height = self.map.height * self.map.tileheight
     }
 
-    setBackgroundColor(self.map)
+    --setBackgroundColor(self.map)
 
     --sound.playMusic( self.music )
 
+   --if you entered through a doorway, then position yourself with it
    if door then
         player.position = {
             x = math.floor(self.doors[ door ].x + self.doors[ door ].node.width / 2 - player.width / 2),
@@ -301,19 +302,21 @@ function Level:init()
 end
 
 function Level:update(dt)
+    --levels only progress when they have a player
     if not self.players then return end
     
     --TODO:find a better way to associate players with levels
     -- I shouldn't need to loop through the server's players
     --TODO:maybe add a test to determine if player.level is correct
-    local plyrs = require("server").getSingleton().players
-    for _,plyr in pairs(plyrs) do
-      if not plyr.attack_box then
-        plyr:enter(Gamestate.get(plyr.level))
-      end
-      self.players[plyr.id] = plyr
-    end
     
+--    local plyrs = require("server").getSingleton().players
+--    for _,plyr in pairs(plyrs) do
+--      if not plyr.attack_box then
+--        plyr:enter(Gamestate.get(plyr.level))
+--      end
+--      self.players[plyr.id] = plyr
+--    end
+--    
     Tween.update(dt)
     for _,player in pairs(self.players) do
         player:update(dt)
@@ -422,7 +425,9 @@ end
 function Level:leave(player)
     if not player then return end
     self.collider:remove(player.bb)
+    self.collider:remove(player.attack_box.bb)
     player.bb = nil
+    player.attack_box.bb = nil
     --assert(nil,"Need to associate a player with leaving")
     --ach:achieve('leave ' .. self.name)
     for i,node in ipairs(self.nodes) do
