@@ -185,6 +185,7 @@ function Level.new(name)
 
     level.nodes = {}
     level.doors = {}
+    level.action_queue = Queue.new()
 
     for k,v in pairs(level.map.objectgroups.nodes.objects) do
         NodeClass = load_node(v.type)
@@ -250,6 +251,38 @@ end
 
 function Level:restartLevel()
     Floorspaces:init()
+end
+
+---
+-- add a function to the Action Queue
+-- @param func the function to be added to the queue
+-- @param params the parameters that should be passed to the function func
+-- @return nil
+function Level:queueAction(func, params)
+    table.insert(self.action_queue,{[func]=params})
+end
+---
+-- Executes all functions in the action_queue and clears it afterwards
+-- @return nil
+function Level:processActionQueue()
+    for _,action in ipairs(self.action_queue.items) do
+        for func,params in pairs(action) do
+            if type(func) == 'function' then
+                --for function without parameters
+                if params == nil then
+                    func()
+                --for function with multiple parameters
+                --may clash with functions that only take one table parameter
+                elseif type(params) == 'table' then
+                    func(unpack(params))
+                --for functions with only one parameter that isnt a table
+                else
+                    func(params)
+                end
+            end
+        end
+    end
+    self.action_queue = Queue.new()
 end
 
 function Level:enter( previous, door , player)
@@ -333,9 +366,12 @@ function Level:update(dt)
 
     self.collider:update(dt)
 
+
     self:updatePan(dt)
 
     Timer.update(dt)
+    --apply accumulated changes that can't be that can't be executed mid-update
+    self:processActionQueue()
 end
 
 function Level:quit()
