@@ -1,4 +1,4 @@
-local queue = require 'queue'
+local Queue = require 'queue'
 local Timer = require 'vendor/timer'
 local window = require 'window'
 local cheat = require 'cheat'
@@ -124,7 +124,7 @@ function Player:enter(level)
     end
 
     self.invulnerable = cheat.god
-    self.events = queue.new()
+    self.events = Queue.new()
     self.rebounding = false
     self.damageTaken = 0
     

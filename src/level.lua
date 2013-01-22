@@ -1,5 +1,5 @@
 local Gamestate = require 'vendor/gamestate'
-local queue = require 'queue'
+local Queue = require 'queue'
 local anim8 = require 'vendor/anim8'
 local tmx = require 'vendor/tmx'
 local HC = require 'vendor/hardoncollider'
@@ -184,8 +184,7 @@ function Level.new(name)
         height=level.map.height * level.map.tileheight
     }
 
-    level.transition = transition.new('fade', 0.5)
-    level.events = queue.new()
+    level.events = Queue.new()
     level.nodes = {}
     level.doors = {}
 
@@ -354,7 +353,8 @@ function Level:update(dt)
 
     Timer.update(dt)
     --apply accumulated changes that can't be that can't be executed mid-update
-    self:processActionQueue()
+    --TODO:reimplement processActionQueue
+    --self:processActionQueue()
 
     local exited, levelName, doorName = self.events:poll('exit')
     if exited then
@@ -362,7 +362,6 @@ function Level:update(dt)
     end
 end
 
-end
 
 function Level:quit()
     if self.respawn ~= nil then

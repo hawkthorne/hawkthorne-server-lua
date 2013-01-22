@@ -77,7 +77,6 @@ function Door:switch(player)
         return
     end
 
-<<<<<<< HEAD
     local level = Gamestate.get(self.level)
     local current = Gamestate.get(player.level)
 
@@ -88,6 +87,7 @@ function Door:switch(player)
         }
         return
     end
+    current:exit(self.level, self.to)
     
     local old_level = current
     old_level.players[player.id]=nil
@@ -114,10 +114,6 @@ function Door:switch(player)
             Gamestate.switch(targetname,targetdoor)
         end]={current,self.level,self.to}})
     end
-=======
-    local current = Gamestate.currentState()
-    current:exit(self.level, self.to)
->>>>>>> master
 end
 
 function Door:collide(node)
