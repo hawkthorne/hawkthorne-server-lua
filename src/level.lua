@@ -157,7 +157,6 @@ function Level.new(name)
     setmetatable(level, Level)
     
     level.over = false
-    level.state = 'idle'  -- TODO: Use state machine
     level.name = name
 
     assert( love.filesystem.exists( "maps/" .. name .. ".lua" ),
@@ -370,17 +369,9 @@ function Level:quit()
 end
 
 function Level:leave()
-  self.state = 'idle'
 end
 
 function Level:exit(levelName, doorName)
-  self.respawn = false
-  if self.state ~= 'idle' then
-    self.state = 'idle'
-    self.transition:backward(function()
-      self.events:push('exit', levelName, doorName)
-    end)
-  end
 end
 
 
@@ -483,10 +474,7 @@ function Level:keyreleased( button , player)
 end
 
 function Level:keypressed( button , player)
-    if self.state ~= 'active' then
-        return
-    end
-
+    
     if button == 'INTERACT' and player.character.state ~= 'idle' then
         return
     end

@@ -78,7 +78,6 @@ end
             level = Gamestate.get(level)
             local player = players[entity]
             player.key_down[button] = false
-            player.key_down[button] = false
             if level then level:keyreleased( button, player) end
             print("keyreleased:"..button)
         elseif cmd == 'keydown' then
