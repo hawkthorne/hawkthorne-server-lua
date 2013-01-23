@@ -59,10 +59,6 @@ function Door.new(node, collider)
 end
 
 function Door:switch(player)
-    if not self.INITIALIZED then
-      --require("mobdebug").start()
-      self.INITIALIZED = true
-    end
     local _, _, _, wy2  = self.bb:bbox()
     local _, _, _, py2 = player.bb:bbox()
     
@@ -87,16 +83,17 @@ function Door:switch(player)
         }
         return
     end
-    current:exit(self.level, self.to)
     
     local old_level = current
     old_level.players[player.id]=nil
     --TODO:remove player's attack boundingbbox
     old_level.collider:remove(player.bb)
     player.bb = nil
-    player.level=self.level
+    old_level.collider:remove(player.attack_box.bb)
+    player.attack_box.bb = nil
     local msg = string.format("%s %s %s %s",player.id,"stateSwitch",player.level, self.level)
     server:sendtoplayer(msg,"*")
+    player.level=self.level
 
     local current = level
     

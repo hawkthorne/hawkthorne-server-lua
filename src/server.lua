@@ -46,8 +46,8 @@ function Server:receivefrom()
         self:addNewClient(entity,msg_or_ip,port_or_nil)
     end
     if data then
-        print("FROM CLIENT: "..(data or "<nil>"))
-        print("           : "..msg_or_ip..","..port_or_nil)
+        --print("FROM CLIENT: "..(data or "<nil>"))
+        --print("           : "..msg_or_ip..","..port_or_nil)
     end
     return data, msg_or_ip, port_or_nil
 end
@@ -68,14 +68,14 @@ end
 
 function Server:sendtoip(message,ip,port)
     if ip=="*" then
-        print("broadcasting: '".. message.."'")
+        --print("broadcasting: '".. message.."'")
         for k,v in pairs(self.clients) do
             self.udp:sendto(message, v.ip, v.port or port)
         end
     elseif self.clients then
         self.udp:sendto(message,ip,port)
-        print("TO CLIENT: '"..(message or "<nil>").."'")
-        print("         : "..ip..","..port)
+        --print("TO CLIENT: '"..(message or "<nil>").."'")
+        --print("         : "..ip..","..port)
     else
         print("bad player: "..(player_entity or 'nil'))
     end
