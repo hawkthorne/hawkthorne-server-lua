@@ -170,7 +170,8 @@ end
         --ignoring
         --TODO: deal with close correctly
     elseif msg_or_ip ~= 'timeout' then
-        error("Unknown network error: "..tostring(msg))
+        error("Unknown network error: "..tostring(port_or_nil).."\n"..
+        "Ensure this server hasn't already been started")
     end
   end
 end
