@@ -150,6 +150,8 @@ Character:reset()
 function Character.new()
     local character = {}
     setmetatable(character, Character)
+    character.name = Character.name
+    character.costume = Character.costume
     return character
 end
 

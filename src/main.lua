@@ -115,8 +115,6 @@ end
                       id = i,
                       name = name,
                       type = type,
-                      person = node.properties and node.properties.person,
-                      testVal = node.enemytype,
                     }
                     server:sendtoip(string.format("%s %s %s", i, 'updateObject', lube.bin:pack_node(objectBundle)), msg_or_ip,  port_or_nil)
                 end

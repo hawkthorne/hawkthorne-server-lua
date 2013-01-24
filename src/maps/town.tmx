@@ -61,7 +61,7 @@
   </object>
   <object name="tavern" type="door" x="360" y="216" width="24" height="48">
    <properties>
-    <property name="level" value="tavern"/>
+    <property name="level" value="forest"/>
     <property name="to" value="main"/>
    </properties>
   </object>
