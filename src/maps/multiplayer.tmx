@@ -5,6 +5,7 @@
   <property name="green" value="216"/>
   <property name="offset" value="86"/>
   <property name="red" value="74"/>
+  <property name="respawn" value="multiplayer.tmx"/>
  </properties>
  <tileset firstgid="1" name="village-forest" tilewidth="24" tileheight="24">
   <image source="../images/tilesets/village-forest.png" width="288" height="216"/>
@@ -52,7 +53,7 @@
  </layer>
  <layer name="foreground" width="46" height="100">
   <data encoding="base64" compression="zlib">
-   eJztm01uwyAQRpG6yS4HyCY36LKLXMH7Nuv+nKNHyVFylB6lM4qtIDfGw4BnQP2ehKJIDjyNMeCBhAAAAAAAcOOTypfDb3N4NmhjizbhbdsmvG3b7Mk7HqtOlVxyOAWbsfIRQwjfr05tl9Cj95mc3zr0ZnqMN9Or9wd5v1Px9gD14H44eEso6MWbn/XYk71pvOVxt2keeW8V73lbqevWPOAt81nrg+ebT7Y3zQ88T6hJvaPz/COpe5ynkh7SugAAAMjY0bi685ZQUOrtkVtiWvOW5tiP5H0saMcr3qXAu5yXqKzRkncO85yv1d7VlvR6L+BtC7xt6dXbY18sl15jC29bvLwlOb4U8M5j8tbuAdTw1qwlJTnVFKXrWTzXtsDblta9h4V9/9bXYEveW1HrPlqfEYE3vCXA286b10i1xlec3bojzR2D/w36CQCglEMIl/1Y1q6djzde4w87P9HnVOj71UklC4pxiL33xmsebV6S4vvHe6xLdMY0RjNvLXlLzrjGMS/x1rCUT5V4c8zJ94fL4f4/GFNvTbyldeUi6TctekuI89dx7llzDnh6l8L5YQB0/AJaCmj5
+   eJztm8FtwzAMRQX0klsGyCUb9JhDVvC9zblN5+goHaWjdJSSiI0IbmyRlExJ6H+AEASxpQfalmRKCQEAAAAA4MaVykeFczU8O7SxRZvw9m0T3r5t9uQd91XnQi4azsGnr3zEEMLnS6W2c+jR+0LOrx16Mz3Gm+nV+52836jU9gDl4PtwyDj/VEpESa63F/ysx57sTf0t97tN88h7q3jP21o7LuUBb5lP6h683HzU3jQ+8DhhZu0dnccfSd3jOLXqIa0LAACAjB31q7vaEgZyvWvklpjWvKU59iN5HzPaqRXvXOCdzykqKVry1jDP+XqtXW1Jr9cC3r7A25devWusi2npNbbw9qWWtyTHtwa8dUze1jWAEt6WuaQkp7pG7nwWz7Uv8Palde9hYd2/9TnYkvdWlLqO1j0iqZzI0u+1va204j2Pa+o6tOKtBd5+3jxHKtW/Yu/WHWnuGPxvcJ8AAHI5hPC1H0vqWO08civY+Yk+p0LfvyupqKAYh9h77zznseYlKb5/vMe6RHtMYyzj1pK3ZI9rHPMcbwtL+VSJN8ecfH+4HO7/g3H1tsRbWpcWyX3ToreEOH8d554t+4CndynsHwbAxi+oNmoM
   </data>
  </layer>
  <layer name="leaves" width="46" height="100">
@@ -117,17 +118,8 @@
   <object type="climbable" x="936" y="1176" width="24" height="168"/>
   <object type="climbable" x="816" y="1344" width="24" height="192"/>
   <object type="climbable" x="96" y="1536" width="24" height="144"/>
-  <object type="movingplatform" x="288" y="1704" width="48" height="24">
-   <properties>
-    <property name="line" value="line_1"/>
-    <property name="offset_x" value="0"/>
-    <property name="offset_y" value="0"/>
-    <property name="speed" value="0.7"/>
-    <property name="sprite" value="images/forestplatform.png"/>
-    <property name="start" value="0"/>
-   </properties>
-  </object>
   <object type="climbable" x="624" y="1680" width="24" height="168"/>
+  <object name="main" type="door" x="24" y="2232" width="48" height="72"/>
  </objectgroup>
  <objectgroup name="wall" width="46" height="100" opacity="0.9">
   <object x="552" y="456" width="144" height="144"/>
@@ -149,11 +141,6 @@
   <object x="360" y="2304" width="360" height="96"/>
   <object x="840" y="2304" width="264" height="96"/>
   <object x="0" y="2304" width="264" height="96"/>
- </objectgroup>
- <objectgroup name="movement" width="46" height="100">
-  <object name="line_1" x="312" y="1704">
-   <polyline points="0,0 168,0"/>
-  </object>
  </objectgroup>
  <objectgroup name="platform" width="46" height="100">
   <object x="0" y="288" width="1104" height="24"/>
@@ -195,5 +182,40 @@
   <object x="48" y="984" width="48" height="24"/>
   <object x="504" y="1128" width="72" height="24"/>
   <object x="936" y="2232" width="48" height="24"/>
+  <object x="480" y="1704" width="24" height="24"/>
+  <object x="432" y="1752" width="24" height="24"/>
+  <object x="336" y="1752" width="24" height="24"/>
+  <object x="288" y="1704" width="24" height="24"/>
+  <object x="384" y="648" width="24" height="24"/>
+  <object type="enemy" x="192" y="696" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="acorn"/>
+   </properties>
+  </object>
+  <object type="enemy" x="168" y="1512" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="acorn"/>
+   </properties>
+  </object>
+  <object type="enemy" x="648" y="1320" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="acorn"/>
+   </properties>
+  </object>
+  <object type="enemy" x="144" y="528" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="acorn"/>
+   </properties>
+  </object>
+  <object type="enemy" x="24" y="432" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="acorn"/>
+   </properties>
+  </object>
+  <object type="enemy" x="216" y="432" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="acorn"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
