@@ -10,6 +10,7 @@ function Server.new()
     server.players = {} -- players[player_id] = player
     server.levels = {}  -- levels[level_name] = level
     server.clients = {}
+    server.log_file = io.open("server"..os.time()..".log", "w")
     
     server.udp = socket.udp()
     server.udp:settimeout(0)
@@ -46,8 +47,10 @@ function Server:receivefrom()
         self:addNewClient(entity,msg_or_ip,port_or_nil)
     end
     if data then
-        --print("FROM CLIENT: "..(data or "<nil>"))
-        --print("           : "..msg_or_ip..","..port_or_nil)
+        self.log_file:write("FROM CLIENT: "..(data or "<nil>").."\n")
+        self.log_file:write("           : "..msg_or_ip..","..port_or_nil.."\n")
+        --TODO: call less frequently
+        self.log_file:flush()
     end
     return data, msg_or_ip, port_or_nil
 end
@@ -74,8 +77,10 @@ function Server:sendtoip(message,ip,port)
         end
     elseif self.clients then
         self.udp:sendto(message,ip,port)
-        --print("TO CLIENT: '"..(message or "<nil>").."'")
-        --print("         : "..ip..","..port)
+        self.log_file:write("TO CLIENT: '"..(message or "<nil>").."'\n")
+        self.log_file:write("         : "..ip..","..port.."\n")
+        --TODO: call less frequently
+        self.log_file:flush()
     else
         print("bad player: "..(player_entity or 'nil'))
     end
