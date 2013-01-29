@@ -55,8 +55,9 @@
   <object name="main" type="door" x="24" y="216" width="24" height="48"/>
   <object type="door" x="1416" y="120" width="24" height="144">
    <properties>
+    <property name="door" value="main"/>
     <property name="instant" value="true"/>
-    <property name="level" value="overworld"/>
+    <property name="level" value="multiplayer"/>
    </properties>
   </object>
   <object name="tavern" type="door" x="360" y="216" width="24" height="48">

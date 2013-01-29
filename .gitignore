@@ -12,3 +12,4 @@ venv
 tmx2lua*
 release.md
 src/conf.lua.bak
+*.log

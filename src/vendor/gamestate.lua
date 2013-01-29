@@ -27,7 +27,6 @@ local function __NULL__() end
 
 -- default gamestate produces error on every callback
 local function __ERROR__() error("Gamestate not initialized. Use Gamestate.switch()") end
-local current = setmetatable({leave = __NULL__}, {__index = __NULL__})
 
 local states = {}
 
@@ -50,13 +49,13 @@ function GS.new()
   }
 end
 
-GS.Level = nil
-
 function GS.load(name)
 
   if love.filesystem.exists("maps/" .. name .. ".lua") then
     -- ugly hack to get around circular import
     states[name] = GS.Level.new(name)
+    --states[name]:init()
+    --states[name].init = __NULL__
   else
     states[name] = require(name)
   end
@@ -72,32 +71,12 @@ end
 
 
 function GS.get(name)
-  local state = states[name]
-
-  if state then
-    return state
-  end
-
-  return GS.load(name)
+  return states[name] or GS.load(name)
 end
 
 function GS.switch(to, ...)
   error("state switches aren't allowed in the backend")
   print(debug.traceback())
-  assert(to, "Missing argument: Gamestate to switch to")
-
-  if type(to) == "string" then
-    local name = to
-    to = GS.get(to)
-    assert(to, "Failed loading gamestate " .. name)
-  end
-
-  current:leave()
-  local pre = current
-  to:init()
-  to.init = __NULL__
-  current = to
-  return current:enter(pre, ...)
 end
 
 -- holds all defined love callbacks after GS.registerEvents is called
@@ -105,9 +84,21 @@ end
 local registry = setmetatable({}, {__index = function() return __NULL__ end})
 
 local all_callbacks = {
-  'update', 'draw', 'focus', 'keypressed', 'keyreleased',
-  'mousepressed', 'mousereleased', 'joystickpressed',
-  'joystickreleased', 'quit'
+  --update all collisions and actions
+  'update',
+  --draws the level for the server
+  'draw',
+  --unknown
+  'focus',
+  --player I/O
+  'keypressed',
+  'keyreleased',  
+  'mousepressed',
+  'mousereleased',
+  'joystickpressed',
+  'joystickreleased',
+  --discards the level
+  'quit'
 }
 
 function GS.registerEvents(callbacks)
@@ -122,6 +113,7 @@ end
 setmetatable(GS, {__index = function(_, func)
   return function(...)
     registry[func](...)
+    error("gamestate has no notion of currentState in the backend")
     current[func](current, ...)
   end
 end})
