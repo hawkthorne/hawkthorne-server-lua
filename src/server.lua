@@ -63,11 +63,7 @@ function Server:receivefrom()
         self.log_file:write("FROM CLIENT: "..(data or "<nil>").."\n")
         self.log_file:write("           : "..msg_or_ip..","..port_or_nil.."\n")
         --TODO: call less frequently
-<<<<<<< HEAD
         --self.log_file:flush()
-=======
-        self.log_file:flush()
->>>>>>> 093f9a2f2b759c27a1c7fc4c7ea4d223bdc32046
     end
     return data, msg_or_ip, port_or_nil
 end
@@ -95,11 +91,7 @@ function Server:sendtoip(message,ip,port)
         self.log_file:write("TO CLIENT: '"..(message or "<nil>").."'\n")
         self.log_file:write("         : "..ip..","..port.."\n")
         --TODO: call less frequently
-<<<<<<< HEAD
         --self.log_file:flush()
-=======
-        self.log_file:flush()
->>>>>>> 093f9a2f2b759c27a1c7fc4c7ea4d223bdc32046
     else
         print("bad player: "..(player_entity or 'nil'))
     end
