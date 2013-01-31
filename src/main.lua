@@ -34,18 +34,11 @@ if correctVersion then
     return split(love.graphics.getCaption(), "v")[2]
   end
 
-function server_print(...)
-  print(...)
-  io.flush()
-end
   function love.load(arg)
-    server_print("Beginning hawkthorne server loop.")
     table.remove(arg, 1)
-
     love.graphics.setDefaultImageFilter('nearest', 'nearest')
     camera:setScale(window.scale, window.scale)
     love.graphics.setMode(window.screen_width, window.screen_height)
-
   end
 
   function love.update(dt)
@@ -71,7 +64,6 @@ end
             level = Gamestate.get(level)
             player.key_down[button] = true
             if level then level:keypressed( button, player) end
-            print("keypressed:"..button)
         elseif cmd == 'keyreleased' then
             local button = parms:match("^(%S*)")
             local level = players[entity].level
@@ -79,7 +71,6 @@ end
             local player = players[entity]
             player.key_down[button] = false
             if level then level:keyreleased( button, player) end
-            print("keyreleased:"..button)
         elseif cmd == 'keydown' then
             -- local button = parms:match("^(%S*)")
             -- local level = players[entity].level
@@ -100,12 +91,12 @@ end
             --update objects for client(s)
             for i, node in pairs(levels[level].nodes) do
 
-                  if node.draw and node.position then
-                  local type,name
+                if node.draw and node.position then
+                    local type,name
  
-                  --note: super_type was created because of inconsistent type use
-                  type = node.super_type
-                  name = node.name
+                    --note: super_type was created because of inconsistent type use
+                    type = node.super_type
+                    name = node.name
                   
                     local objectBundle  = {level = level,
                       x = node.position.x,y = node.position.y,
@@ -131,15 +122,11 @@ end
                                           direction = plyr.character.direction}
 
                 server:sendtoip(string.format("%s %s %s", i, 'updatePlayer', lube.bin:pack_node(playerBundle)), msg_or_ip,  port_or_nil)
-            end
+                end
             end
             --update players for client(s)
        elseif cmd == 'register' then
             local name,costume = parms:match("^(%S*) (.*)")
-            server_print("registering a new player:", entity)
-            server_print("msg_or_ip:", msg_or_ip)
-            server_print("port_or_nil:", port_or_nil)
-            server_print()
             players[entity] = Player.new()
             players[entity].id = entity
             --todo:remove town dependence
@@ -147,22 +134,17 @@ end
             players[entity].ip_address = msg_or_ip
             players[entity].character.name=name
             players[entity].character.costume=costume
-            print("registered")
         elseif cmd == 'enterLevel' then
             local level = parms:match("^(%S*)")
             --TODO:remove the necessity of this line
             players[entity].level = level
             players[entity]:enter(Gamestate.get(level))
         elseif cmd == 'unregister' then
-            server_print("unregistering a player:", entity)
-            server_print("msg_or_ip:", msg_or_ip)
-            server_print("port_or_nil:", port_or_nil)
             players[entity] = nil
         elseif cmd == 'quit' then
             running = false;
         else
-            server_print("unrecognized command:'"..(cmd or 'nil').."'")
-            server_print()
+            print("unrecognized command:'"..(cmd or 'nil').."'")
         end
     elseif msg_or_ip == 'closed' then
         --ignoring

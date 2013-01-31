@@ -22,7 +22,7 @@ function Server.new()
     
     server.udp = socket.udp()
     server.udp:settimeout(0)
-    server.port = 12345 --unnecessary
+    server.port = 12345
     server.udp:setsockname('*', server.port)
     lube.bin:setseperators("?","!")
     return server
@@ -63,7 +63,7 @@ function Server:receivefrom()
         self.log_file:write("FROM CLIENT: "..(data or "<nil>").."\n")
         self.log_file:write("           : "..msg_or_ip..","..port_or_nil.."\n")
         --TODO: call less frequently
-        self.log_file:flush()
+        --self.log_file:flush()
     end
     return data, msg_or_ip, port_or_nil
 end
@@ -71,7 +71,6 @@ end
 function Server:sendtoplayer(message,player_entity)
     assert(type(player_entity)=="string","String required")
     if player_entity=="*" and self.clients then
-        print("broadcasting: ")
         for k,v in pairs(self.clients) do
             self:sendtoip(message, v.ip, v.port or port)
         end
@@ -84,7 +83,6 @@ end
 
 function Server:sendtoip(message,ip,port)
     if ip=="*" then
-        --print("broadcasting: '".. message.."'")
         for k,v in pairs(self.clients) do
             self.udp:sendto(message, v.ip, v.port or port)
         end
@@ -93,7 +91,7 @@ function Server:sendtoip(message,ip,port)
         self.log_file:write("TO CLIENT: '"..(message or "<nil>").."'\n")
         self.log_file:write("         : "..ip..","..port.."\n")
         --TODO: call less frequently
-        self.log_file:flush()
+        --self.log_file:flush()
     else
         print("bad player: "..(player_entity or 'nil'))
     end

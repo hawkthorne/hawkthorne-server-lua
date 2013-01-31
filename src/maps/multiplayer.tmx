@@ -5,7 +5,7 @@
   <property name="green" value="216"/>
   <property name="offset" value="86"/>
   <property name="red" value="74"/>
-  <property name="respawn" value="multiplayer.tmx"/>
+  <property name="respawn" value="multiplayer"/>
  </properties>
  <tileset firstgid="1" name="village-forest" tilewidth="24" tileheight="24">
   <image source="../images/tilesets/village-forest.png" width="288" height="216"/>
