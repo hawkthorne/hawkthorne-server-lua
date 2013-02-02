@@ -71,7 +71,7 @@ function Item:use(player)
         player.currently_held = weapon
         player:setSpriteStates(weapon.spriteStates or 'wielding')
     end
-    table.insert(GS.currentState().nodes, weapon)
+    GS.currentState().nodes[weapon] = weapon
     
 end
 

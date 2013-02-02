@@ -291,7 +291,7 @@ end
 
 function Weapon:throwProjectile()
     local proj = Projectile.new( self.projectile, self.collider )
-    table.insert(Gamestate.currentState().nodes,proj)
+    Gamestate.currentState().nodes[proj] = proj
 end
 
 function Weapon:floor_pushback(node, new_y)

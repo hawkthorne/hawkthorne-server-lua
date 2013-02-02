@@ -17,6 +17,6 @@ return{
         node.directory = item.type.."s/"
         local knife = Projectile.new(node, GS.currentState().collider)
         knife:throw(player)
-        table.insert(GS.currentState().nodes, knife)
+        GS.currentState().nodes[knife] = knife
     end
 }

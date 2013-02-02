@@ -59,10 +59,9 @@ function PlayerAttack:collide(node, dt, mtv_x, mtv_y)
         local msg = string.format("%s %s %s",self.player.id,"sound","punch")
         server:sendtoplayer(msg,"*")
         local attackSprite = Sprite.new(attackNode, collider)
-        table.insert(Gamestate.currentState().nodes,attackSprite)
-        attackSprite.nodeidx = #Gamestate.currentState().nodes
+        Gamestate.currentState().nodes[attackSprite] = attackSprite
         Timer.add(0.1,function ()
-            table.remove(Gamestate.currentState().nodes,attackSprite.nodeidx)
+            Gamestate.currentState().nodes[attackSprite] = attackSprite
         end)
         node:hurt(self.damage)
         self:deactivate()

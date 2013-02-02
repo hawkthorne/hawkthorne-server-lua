@@ -77,6 +77,8 @@ function Material:update()
             if player.inventory:addItem(item) then
                 self.exists = false
                 self.collider:remove(self.bb)
+                self.bb = nil
+                self.containerLevel.nodes[self] = nil
             end
         end
     end

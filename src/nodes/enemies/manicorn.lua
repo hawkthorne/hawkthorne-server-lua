@@ -74,7 +74,7 @@ return {
         node.y = enemy.position.y
         local rainbowbeam = Projectile.new( node, enemy.collider )
         rainbowbeam.enemyCanPickUp = true
-        table.insert(Gamestate.currentState().nodes,rainbowbeam)
+        Gamestate.currentState().nodes[rainbowbeam] = rainbowbeam
         --if enemy.currently_held then enemy.currently_held:throw(enemy) end
         enemy:registerHoldable(rainbowbeam)
         enemy:pickup()

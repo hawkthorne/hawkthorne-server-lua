@@ -189,14 +189,20 @@ function Level.new(name)
 
     for k,v in pairs(level.map.objectgroups.nodes.objects) do
         NodeClass = load_node(v.type)
+        local node
         if NodeClass then
             v.objectlayer = 'nodes'
-            local node = NodeClass.new( v, level.collider )
+            node = NodeClass.new( v, level.collider )
             if(v.name=="") then v.name = nil end
             --I'm sorry I had to do this, but the type was being used inconsistently
             node.super_type = v.type
             node.name = v.name or node.type
-            table.insert( level.nodes, node )
+            --I'm sorry I had to do this, but it removes the possibility of type collisions
+            --TODO: refactor level.nodes to add nodes as follows:
+            --  level.nodes[node] = node
+            --  makes removal very easy
+            node.containerLevel = level
+            level.nodes[node] = node
         end
         if v.type == 'door' then
             if v.name then
@@ -204,7 +210,7 @@ function Level.new(name)
                     assert(not level.default_position,"Level "..name.." must have only one 'main' door")
                     level.default_position = {x=v.x, y=v.y}
                 end
-                level.doors[v.name] = {x=v.x, y=v.y, node=level.nodes[#level.nodes]}
+                level.doors[v.name] = {x=v.x, y=v.y, node=node}
             end
         end
     end
@@ -221,14 +227,16 @@ function Level.new(name)
         level.floorspace = true
         for k,v in pairs(level.map.objectgroups.floorspace.objects) do
             v.objectlayer = 'floorspace'
-            table.insert(level.nodes, Floorspace.new(v, level))
+            local node =  Floorspace.new(v, level)
+            level.nodes[node] = node
         end
     end
 
     if level.map.objectgroups.platform then
         for k,v in pairs(level.map.objectgroups.platform.objects) do
             v.objectlayer = 'platform'
-            table.insert(level.nodes, Platform.new(v, level.collider))
+            local node = Platform.new(v, level.collider)
+            level.nodes[node] = node
         end
     end
 
@@ -286,8 +294,8 @@ function Level:enter( previous, door , player)
     end
 
     --this seems borderline disastrous
-    for i,node in ipairs(self.nodes) do
-        if node.enter then node:enter(previous) end
+    for i,node in pairs(self.nodes) do
+        if node.enter then node:enter(previous, self.map) end
     end
     player:enter(self)
 end
@@ -333,7 +341,7 @@ function Level:update(dt)
  
     --TODO:remove the double nested loop
     --seems disastrous
-    for _,node in ipairs(self.nodes) do
+    for _,node in pairs(self.nodes) do
         for k,player in pairs(self.players) do
             if node.update then node:update(dt, player) end
         end
@@ -374,13 +382,13 @@ function Level:draw()
     if self.player.footprint then
         self:floorspaceNodeDraw()
     else
-        for i,node in ipairs(self.nodes) do
+        for i,node in pairs(self.nodes) do
             if node.draw and not node.foreground then node:draw() end
         end
 
         self.player:draw()
 
-        for i,node in ipairs(self.nodes) do
+        for i,node in pairs(self.nodes) do
             if node.draw and node.foreground then node:draw() end
         end
     end
@@ -454,7 +462,7 @@ function Level:leave(player)
     player.attack_box.bb = nil
     --assert(nil,"Need to associate a player with leaving")
     --ach:achieve('leave ' .. self.name)
-    for i,node in ipairs(self.nodes) do
+    for i,node in pairs(self.nodes) do
         if node.leave then node:leave() end
         if node.collide_end then
             node:collide_end(player)
@@ -472,7 +480,7 @@ function Level:keypressed( button , player)
         return
     end
 
-    for i,node in ipairs(self.nodes) do
+    for i,node in pairs(self.nodes) do
         node.players_touched = node.players_touched or {}
         if node.players_touched[player] and node.keypressed then
             if node:keypressed( button, player) then
