@@ -59,10 +59,11 @@ function PlayerAttack:collide(node, dt, mtv_x, mtv_y)
         local msg = string.format("%s %s %s",self.player.id,"sound","punch")
         server:sendtoplayer(msg,"*")
         local attackSprite = Sprite.new(attackNode, collider)
-        attackSprite.id = Level.generateObjectId()
-        Gamestate.currentState().nodes[attackSprite] = attackSprite
+        attackSprite.id = require("level").generateObjectId()
+        local level = Gamestate.get(self.player.level)
+        level.nodes[attackSprite] = attackSprite
         Timer.add(0.1,function ()
-            Gamestate.currentState().nodes[attackSprite] = nil
+            level.nodes[attackSprite] = nil
         end)
         node:hurt(self.damage)
         self:deactivate()
