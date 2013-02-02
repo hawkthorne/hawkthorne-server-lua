@@ -81,6 +81,12 @@ if correctVersion then
             level = levels[level]
             local player = players[entity]
             level:enter(require("overworld"),"main",player)
+        elseif cmd == 'enterLevel' then
+            error("deprecated enterLevel:"..data)
+            local level = parms:match("^(%S*)")
+            --TODO:remove the necessity of this line
+            players[entity].level = level
+            players[entity]:enter(Gamestate.get(level))
         elseif cmd == 'update' then
             --sends an update back to the client
             local level = parms:match("^(%S*)")
@@ -89,6 +95,7 @@ if correctVersion then
             levels[level] = levels[level] or Gamestate.load(level)
             levels[level].nodes = levels[level].nodes or {}
             --update objects for client(s)
+            --TODO: create appropriate index 'i' for node
             for i, node in pairs(levels[level].nodes) do
 
                 if node.draw and node.position then
@@ -103,11 +110,11 @@ if correctVersion then
                       state = node.state,
                       position = node.animation and node:animation().position,
                       direction = node.direction,
-                      id = i,
+                      id = node.id,
                       name = name,
                       type = type,
                     }
-                    server:sendtoip(string.format("%s %s %s", i, 'updateObject', lube.bin:pack_node(objectBundle)), msg_or_ip,  port_or_nil)
+                    server:sendtoip(string.format("%s %s %s", objectBundle.id, 'updateObject', lube.bin:pack_node(objectBundle)), msg_or_ip,  port_or_nil)
                 end
             end
             for i, plyr in pairs(players) do
@@ -134,11 +141,6 @@ if correctVersion then
             players[entity].ip_address = msg_or_ip
             players[entity].character.name=name
             players[entity].character.costume=costume
-        elseif cmd == 'enterLevel' then
-            local level = parms:match("^(%S*)")
-            --TODO:remove the necessity of this line
-            players[entity].level = level
-            players[entity]:enter(Gamestate.get(level))
         elseif cmd == 'unregister' then
             players[entity] = nil
         elseif cmd == 'quit' then
@@ -150,8 +152,8 @@ if correctVersion then
         --ignoring
         --TODO: deal with close correctly
     elseif msg_or_ip ~= 'timeout' then
-        error("Unknown network error: "..tostring(port_or_nil).."\n"..
-        "Ensure this server hasn't already been started")
+        error("Unknown network error: "..tostring(port_or_nil)..",".. tostring(msg_or_ip).."\n"..
+              "Ensure this server hasn't already been started")
     end
   end
 end
