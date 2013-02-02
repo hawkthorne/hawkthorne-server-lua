@@ -93,7 +93,6 @@ function Platform:keypressed( button, player )
     if player.controlState:is('ignoreMovement') then return end
     if self.drop and button == 'DOWN' and player.down_dt > 0 and player.down_dt < 3.0 then
          player.platform_dropping = true
-         Timer.add( 0.25, function() player.platform_dropping = false end )
     end
 end
 
