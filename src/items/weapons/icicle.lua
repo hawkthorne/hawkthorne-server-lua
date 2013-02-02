@@ -17,6 +17,7 @@ return{
         node.directory = item.type.."s/"
         local knife = Projectile.new(node, GS.currentState().collider)
         knife:throw(player)
+        knife.id = Level.generateObjectId()
         GS.currentState().nodes[knife] = knife
     end
 }

@@ -33,6 +33,7 @@ function CeilingHippie:update(dt, player)
 
             local level = gamestate.currentState()
             local node = enemy.new( self.node, self.collider, 'hippy' )
+            node.id = Level.generateObjectId()
             level.nodes[node] = node
             self.hippie = node
     

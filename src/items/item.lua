@@ -71,6 +71,7 @@ function Item:use(player)
         player.currently_held = weapon
         player:setSpriteStates(weapon.spriteStates or 'wielding')
     end
+    weapon.id = Level.generateObjectId()
     GS.currentState().nodes[weapon] = weapon
     
 end

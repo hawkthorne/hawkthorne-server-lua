@@ -151,6 +151,11 @@ end
 local Level = {}
 Level.__index = Level
 Level.level = true
+Level.objectCount = 0
+function Level.generateObjectId()
+    Level.objectCount = Level.objectCount + 1
+    return Level.objectCount
+end
 
 function Level.new(name)
     local level = {}
@@ -202,6 +207,7 @@ function Level.new(name)
             --  level.nodes[node] = node
             --  makes removal very easy
             node.containerLevel = level
+            node.id = Level.generateObjectId()
             level.nodes[node] = node
         end
         if v.type == 'door' then
@@ -228,6 +234,7 @@ function Level.new(name)
         for k,v in pairs(level.map.objectgroups.floorspace.objects) do
             v.objectlayer = 'floorspace'
             local node =  Floorspace.new(v, level)
+            node.id = Level.generateObjectId()
             level.nodes[node] = node
         end
     end
@@ -236,6 +243,7 @@ function Level.new(name)
         for k,v in pairs(level.map.objectgroups.platform.objects) do
             v.objectlayer = 'platform'
             local node = Platform.new(v, level.collider)
+            node.id = Level.generateObjectId()
             level.nodes[node] = node
         end
     end

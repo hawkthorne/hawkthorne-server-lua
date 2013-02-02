@@ -291,6 +291,7 @@ end
 
 function Weapon:throwProjectile()
     local proj = Projectile.new( self.projectile, self.collider )
+    proj.id = Level.generateObjectId()
     Gamestate.currentState().nodes[proj] = proj
 end
 

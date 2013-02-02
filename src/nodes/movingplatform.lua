@@ -80,8 +80,8 @@ function MovingPlatform.new(node, collider)
     return mp
 end
 
-function MovingPlatform:enter()
-    self.map = gs.currentState().map
+function MovingPlatform:enter(previous)
+    self.map = self.containerLevel.map
     for _,x in pairs( self.map.objectgroups.movement.objects ) do
         if x.name == self.line then self.line = x end
     end
