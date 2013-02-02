@@ -295,7 +295,7 @@ function Level:enter( previous, door , player)
 
     --this seems borderline disastrous
     for i,node in pairs(self.nodes) do
-        if node.enter then node:enter(previous, self.map) end
+        if node.enter then node:enter(previous) end
     end
     player:enter(self)
 end
