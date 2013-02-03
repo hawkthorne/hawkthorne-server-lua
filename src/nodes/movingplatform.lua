@@ -58,6 +58,7 @@ function MovingPlatform.new(node, collider)
     mp.direction = node.properties.direction == '-1' and -1 or 1
 
     mp.sprite = love.graphics.newImage( node.properties.sprite )
+    mp.spritePath = node.properties.sprite
     assert( mp.sprite, 'Moving platforms must specify a \'sprite\' property' )
 
     mp.offset_x = node.properties.offset_x and node.properties.offset_x or 0

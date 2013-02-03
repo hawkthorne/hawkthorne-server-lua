@@ -27,6 +27,7 @@ function Sprite.new(node, collider)
     assert(p.sheet, "'sheet' required for sprite node")
 
     sprite.sheet = load_sprite(p.sheet)
+    sprite.sheetPath = p.sheet
     
     sprite.animation = p.animation or false
     sprite.foreground = p.foreground == 'true'
@@ -84,6 +85,10 @@ function Sprite:draw()
     else
         love.graphics.draw(self.sheet, self.x, self.y, 0, self.flip and -1 or 1, 1, self.flip and self.width or 0)
     end
+end
+
+function Sprite:animation()
+    return self.animation
 end
 
 return Sprite

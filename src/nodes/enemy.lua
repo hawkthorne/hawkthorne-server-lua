@@ -130,6 +130,7 @@ function Enemy:die()
     self.dead = true
     self.collider:remove(self.bb)
     self.bb = nil
+    self.containerLevel[self] = nil
 end
 
 function Enemy:dropTokens()

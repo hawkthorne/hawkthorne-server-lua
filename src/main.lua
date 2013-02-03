@@ -1,13 +1,10 @@
-local socket = require "socket"
-require 'vendor/lube'
-local Server = require 'server'
-local server = Server.getSingleton()
-
 local correctVersion = require 'correctversion'
 
 if correctVersion then
 
   require 'utils'
+  require 'vendor/lube'
+
   local debugger = require 'debugger'
   local Gamestate = require 'vendor/gamestate'
   local Level = require 'level'
@@ -20,10 +17,12 @@ if correctVersion then
   local character = require 'character'
   local cheat = require 'cheat'
   local Player = require 'player'
+  local socket = require "socket"
   local Server = require 'server'
 
-  local players = server.players -- players[player_id] = player
-  local levels = server.levels  -- levels[level_name] = level
+  local server = nil
+  local players = nil -- players[player_id] = player
+  local levels = nil -- levels[level_name] = level
 
   -- XXX Hack for level loading
   Gamestate.Level = Level
@@ -36,6 +35,19 @@ if correctVersion then
 
   function love.load(arg)
     table.remove(arg, 1)
+    cli:add_option("-p, --port=NAME", "The port to use")
+    cli:add_option("--console", "Displays print info")
+
+    local args = cli:parse(arg)
+    if args["port"] ~= "" then
+      local port = args["port"]
+      Server.singleton = Server.new(port)
+    end
+    server = Server.getSingleton()
+    players = server.players -- players[player_id] = player
+    levels = server.levels  -- levels[level_name] = level
+
+
     love.graphics.setDefaultImageFilter('nearest', 'nearest')
     camera:setScale(window.scale, window.scale)
     love.graphics.setMode(window.screen_width, window.screen_height)
@@ -97,22 +109,34 @@ if correctVersion then
             --update objects for client(s)
             --TODO: create appropriate index 'i' for node
             for i, node in pairs(levels[level].nodes) do
-
-                if node.draw and node.position then
                     local type,name
  
                     --note: super_type was created because of inconsistent type use
                     type = node.super_type
                     name = node.name
+
+                if node.draw and (node.position or (node.x and node.y)) and type~="sprite" then
+
+                    local framePosition = 1
+                    if _G.type(node.animation)== "function" then
+                        framePosition = node:animation().position
+                    elseif node.animation then
+                        framePosition = node.animation
+                    end
+                   
                   
                     local objectBundle  = {level = level,
-                      x = node.position.x,y = node.position.y,
+                      x = math.round(node.x or node.position.x),y = math.round(node.y or node.position.y),
                       state = node.state,
-                      position = node.animation and node:animation().position,
+                      position = framePosition,
                       direction = node.direction,
                       id = node.id,
                       name = name,
                       type = type,
+                      width = node.width,
+                      height = node.height,
+                      spritePath = node.spritePath,
+                      sheetPath = node.sheetPath,
                     }
                     server:sendtoip(string.format("%s %s %s", objectBundle.id, 'updateObject', lube.bin:pack_node(objectBundle)), msg_or_ip,  port_or_nil)
                 end

@@ -3,8 +3,9 @@ local socket = require "socket"
 local Server = {}
 Server.__index = Server
 Server.singleton = nil
+--the port that is used when a new instance is created
 
-function Server.new()
+function Server.new(port)
     local server = {}
     setmetatable(server, Server)
     server.players = {} -- players[player_id] = player
@@ -22,7 +23,7 @@ function Server.new()
     
     server.udp = socket.udp()
     server.udp:settimeout(0)
-    server.port = 12345
+    server.port = port or 12345
     server.udp:setsockname('*', server.port)
     lube.bin:setseperators("?","!")
     return server
