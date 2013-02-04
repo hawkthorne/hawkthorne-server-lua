@@ -53,7 +53,7 @@ function GS.load(name)
 
   if love.filesystem.exists("maps/" .. name .. ".lua") then
     -- ugly hack to get around circular import
-    states[name] = GS.Level.new(name)
+    states[name] = require("level").new(name)
     --states[name]:init()
     --states[name].init = __NULL__
   else
@@ -74,8 +74,8 @@ function GS.get(name)
   return states[name] or GS.load(name)
 end
 
-function GS.switch(to, ...)
-  error("state switches aren't allowed in the backend")
+function GS.switch(to, player, door)
+  error("gamestate has no notion of currentState in the backend")
   print(debug.traceback())
 end
 

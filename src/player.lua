@@ -507,6 +507,9 @@ function Player:die(damage)
     if self.invulnerable or cheat.god then
         return
     end
+    if damage == nil then
+        damage = self.health
+    end
 
     damage = math.floor(damage)
     if damage == 0 then
@@ -541,7 +544,12 @@ function Player:die(damage)
             if self.lives <= 0 then
                 server:sendtoplayer(string.format("%s %s %s %s", self.id, 'stateSwitch',self.level,'gameover'),"*")
             else
-                server:sendtoplayer(string.format("%s %s %s %s", self.id, 'stateSwitch',self.level,Gamestate.get(self.level).spawn),"*")
+                --TODO: use leave() and enter()
+                local respawnLevel = Gamestate.get(self.level).spawn
+                server:sendtoplayer(string.format("%s %s %s %s", self.id, 'stateSwitch',self.level,respawnLevel),"*")
+                local door = Gamestate.get(respawnLevel).doors["main"]
+                self.position.x = door.x + door.node.width/2 - self.width/2
+                self.position.y = door.y + door.node.height - self.height
             end
         end)
     else

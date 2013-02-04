@@ -83,9 +83,7 @@ function Liquid:collide(node, dt, mtv_x, mtv_y)
     if self.mask then player.stencil = self.stencil end
     
     if self.death then
-        player.health = 0
-        player.dead = true
-        self.died = true
+        player:die()
     end
 
     if self.injure then
@@ -93,8 +91,7 @@ function Liquid:collide(node, dt, mtv_x, mtv_y)
     end
 
     if self.drown and player.position.y >= self.position.y then
-        player.health = 0
-        player.dead = true
+        player:die()
     end
 
     if self.drag then
@@ -137,9 +134,6 @@ end
 function Liquid:update(dt, player)
     self.animation_top:update(dt)
     self.animation_bottom:update(dt)
-    if self.died and player.position.y + player.height < self.position.y + self.height then
-        player.position.y = player.position.y + 20 * dt
-    end
 end
 
 function Liquid:draw()

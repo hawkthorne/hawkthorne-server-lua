@@ -124,9 +124,6 @@ if correctVersion then
                         framePosition = node.animation.position
                     end
                    
-                    if not( node.direction=="right" or node.direction=="left") then
-                        print(type,name,node.direction)
-                    end
                     local my_direction
                     if node.direction=="right" or node.direction=="left" then
                         my_direction = node.direction
