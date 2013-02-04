@@ -121,15 +121,30 @@ if correctVersion then
                     if _G.type(node.animation)== "function" then
                         framePosition = node:animation().position
                     elseif node.animation then
-                        framePosition = node.animation
+                        framePosition = node.animation.position
                     end
                    
-                  
+                    if not( node.direction=="right" or node.direction=="left") then
+                        print(type,name,node.direction)
+                    end
+                    local my_direction
+                    if node.direction=="right" or node.direction=="left" then
+                        my_direction = node.direction
+                    elseif node.direction==1 then
+                        my_direction = "right"
+                    elseif node.direction==-1 then
+                        my_direction = "left"
+                    elseif not node.direction then
+                        my_direction = "right"
+                    else
+                        error("direction of type :"..node.direction.." is not understood")
+                    end
+                    
                     local objectBundle  = {level = level,
                       x = math.round(node.x or node.position.x),y = math.round(node.y or node.position.y),
                       state = node.state,
                       position = framePosition,
-                      direction = node.direction,
+                      direction = my_direction,
                       id = node.id,
                       name = name,
                       type = type,

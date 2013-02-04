@@ -15,6 +15,7 @@ local cheat = require 'cheat'
 local sound = require 'vendor/TEsound'
 local token = require 'nodes/token'
 local game = require 'game'
+local Level = require 'level'
 --local ach = (require 'achievements').new()
 
 local Enemy = {}
@@ -130,26 +131,29 @@ function Enemy:die()
     self.dead = true
     self.collider:remove(self.bb)
     self.bb = nil
-    self.containerLevel[self] = nil
+    self.containerLevel.nodes[self] = nil
 end
 
 function Enemy:dropTokens()
     if not self.props.tokens or self.props.tokens == 0 then return end
-    
+    local level = self.containerLevel
+    local newToken
     for i=1, self.props.tokens do
         local r = math.random(100) / 100
         for _,d in pairs( self.props.tokenTypes ) do
             if r < d.p then
-                table.insert(
-                    self.tokens,
-                    token.new(
-                        d.item,
-                        self.position.x + self.props.width / 2,
-                        self.position.y + self.props.height,
-                        self.collider,
-                        d.v
-                    )
+                newToken = token.new(
+                    {type = d.item},
+                    self.collider,
+                    self.position.x + self.props.width / 2,
+                    self.position.y + self.props.height,
+                    d.v
                 )
+                newToken.id = Level.generateObjectId()
+                newToken.super_type = 'token'
+                newToken.name = d.item
+                newToken.containerLevel = level
+                level.nodes[newToken] = newToken
                 break
             end
         end

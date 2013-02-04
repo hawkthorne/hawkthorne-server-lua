@@ -5,9 +5,11 @@ local game = require 'game'
 local Token = {}
 Token.__index = Token
  
-function Token.new( type, x, y, collider, value )
+--function Token.new( type, x, y, collider, value )
+function Token.new( node, collider, x, y, value )
     local token = {}
     setmetatable(token, Token)
+    local type = node.type
 
     token.item = require ( 'tokens/' .. type )
 

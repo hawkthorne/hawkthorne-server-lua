@@ -37,6 +37,7 @@ local Platform = require 'nodes/platform'
 local Bspline = require 'vendor/bspline'
 local game = require 'game'
 local gs = require 'vendor/gamestate'
+local Level = require 'level'
 
 local MovingPlatform = {}
 MovingPlatform.__index = MovingPlatform
@@ -120,6 +121,12 @@ function MovingPlatform:update(dt,player)
 
     if self.chain > 1 and self.x - self.node.x > self.width and not self.next then
         self.next = MovingPlatform.new(self.node, self.collider )
+        self.next.containerLevel = self.containerLevel
+        self.next.id = Level.generateObjectId()
+        self.next.super_type = self.super_type
+        self.next.name = self.name
+        self.containerLevel.nodes[self.next] = self.next
+        
         self.next:enter()
         self.next.chain = self.chain - 1
         self.next.moving = true

@@ -2,6 +2,7 @@ local Timer = require 'vendor/timer'
 local sound = require 'vendor/TEsound'
 local Projectile = require 'nodes/projectile'
 local Gamestate = require 'vendor/gamestate'
+local Level = require 'level'
 
 return {
     name = 'manicorn',
@@ -69,13 +70,19 @@ return {
     end,
     attackRainbow = function( enemy )
         enemy.state = 'attackrainbow_start'
-        local node = require('nodes/projectiles/rainbowbeam')
-        node.x = enemy.position.x
-        node.y = enemy.position.y
-        local rainbowbeam = Projectile.new( node, enemy.collider )
+        local level = enemy.containerLevel
+        local rainbowbeamNode = require('nodes/projectiles/rainbowbeam')
+        rainbowbeamNode.x = enemy.position.x
+        rainbowbeamNode.y = enemy.position.y
+        
+        local rainbowbeam = Projectile.new( rainbowbeamNode, enemy.collider )
         rainbowbeam.enemyCanPickUp = true
         rainbowbeam.id = Level.generateObjectId()
-        Gamestate.currentState().nodes[rainbowbeam] = rainbowbeam
+        rainbowbeam.super_type = 'projectile'
+        rainbowbeam.name = 'rainbowbeam'
+        rainbowbeam.containerLevel = level
+
+        level.nodes[rainbowbeam] = rainbowbeam
         --if enemy.currently_held then enemy.currently_held:throw(enemy) end
         enemy:registerHoldable(rainbowbeam)
         enemy:pickup()
