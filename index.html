@@ -42,7 +42,7 @@
 
 <p>Note:
 the <strong>entity</strong> is an id assigned to the player when he tries to register.
-<strong>obj</strong> and <strong>plyr</strong> sent through the udp sockets are packed representations of an object and a player respectively.</p>
+<strong>obj</strong> and <strong>plyr</strong> sent through the udp sockets are <a href="http://nimbusbp1729.github.com/packed.html">packed representations</a> of an object and a player respectively.</p>
 
 <p>Supported commands and when the should be sent:</p>
 
@@ -56,14 +56,15 @@ the <strong>entity</strong> is an id assigned to the player when he tries to reg
 <pre><code>(entity) keyreleased (BUTTON)    
 </code></pre>
 
-<p>when the client requests an update of level     level_name    </p>
+<p>when the client requests an update of level <code>level_name</code>
+Note: it is expected that the server responds with <code>updatePlayer</code> and <code>updateObject</code></p>
 
-<pre><code>(entity) update (level_name)    
+<pre><code>(entity) update (level_name)
 </code></pre>
 
-<p>when the client registers a character by the name of     name     with costume     costume    </p>
+<p>when the client registers a character by the name of <code>name</code> with costume <code>costume</code>    </p>
 
-<pre><code>(entity) register (name) (costume)    
+<pre><code>(entity) register (name) (costume)
 </code></pre>
 
 <p>TODO: registration response with entity assignment</p>
@@ -73,13 +74,15 @@ the <strong>entity</strong> is an id assigned to the player when he tries to reg
 <pre><code>(entity) enter (level)    
 </code></pre>
 
-<p>TODO: character costume switch </p>
+<p>TODO: character costume switch</p>
 
 <h2>Server to Client</h2>
 
 <p>when the server gets a request from an entity to <code>update</code>
-this is sent to a single client
-    (entity) updatePlayer (plyr)    </p>
+this is sent to a single client</p>
+
+<pre><code>(entity) updatePlayer (plyr)
+</code></pre>
 
 <p>when the server gets a request from an entity to     update<br>
 this is sent to a single client</p>
@@ -96,7 +99,7 @@ this is sent to all clients</p>
 <p>when the server wants to tell a client to make a sound
 this may or may not be sent to all clients</p>
 
-<pre><code>(entity) sound (sound_file)    
+<pre><code>(entity) sound (sound_file)
 </code></pre>
         </article>
       </div>
