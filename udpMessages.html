@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Hawkthorne Multiplayer : " />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Hawkthorne Multiplayer</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/NimbusBP1729/hawkthorne-server-lua">View on GitHub</a>
+
+          <h1 id="project_title">Hawkthorne Multiplayer</h1>
+          <h2 id="project_tagline"></h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/NimbusBP1729/hawkthorne-server-lua/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/NimbusBP1729/hawkthorne-server-lua/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Multiplayer Client/Server interface</h1>
+
+<h2>Client to Server</h2>
+
+<p>Note:
+the <strong>entity</strong> is an id assigned to the player when he tries to register.
+<strong>obj</strong> and <strong>plyr</strong> sent through the udp sockets are <a href="packed.html">packed representations</a> of an object and a player respectively.</p>
+
+<p>Supported commands and when they should be sent:</p>
+
+<p>when the client presses a button</p>
+
+<pre><code>(entity) keypressed (button)
+</code></pre>
+
+<p>when the client releases a button</p>
+
+<pre><code>(entity) keyreleased (button)    
+</code></pre>
+
+<p>when the client requests an update of level <code>level_name</code>
+Note: it is expected that the server responds with <code>updatePlayer</code> and <code>updateObject</code></p>
+
+<pre><code>(entity) update (levelName)
+</code></pre>
+
+<p>when the client registers a character by the name of <code>name</code> with costume <code>costume</code>    </p>
+
+<pre><code>(entity) register (name) (costume)
+</code></pre>
+
+<p>TODO: registration response with entity assignment</p>
+
+<p>when the client decides to enter a specific level</p>
+
+<pre><code>(entity) enter (level)    
+</code></pre>
+
+<p>TODO: character costume switch</p>
+
+<h2>Server to Client</h2>
+
+<p>when the server gets a request from an entity to <code>update</code>
+this is sent to a single client</p>
+
+<pre><code>(entity) updatePlayer (plyr)
+</code></pre>
+
+<p>when the server gets a request from an entity to     update<br>
+this is sent to a single client</p>
+
+<pre><code>(entity) updateObject (obj)    
+</code></pre>
+
+<p>when the server notices a player switching between backend gamestates
+this is sent to all clients</p>
+
+<pre><code>(entity) stateSwitch (fromLevel) (toLevel)    
+</code></pre>
+
+<p>when the server wants to tell a client to make a sound
+this may or may not be sent to all clients</p>
+
+<pre><code>(entity) sound (soundFile)
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Hawkthorne Multiplayer maintained by <a href="https://github.com/NimbusBP1729">NimbusBP1729</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
