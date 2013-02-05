@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Hawkthorne Packed Nodes : " />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Hawkthorne Packed Nodes</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/NimbusBP1729/hawkthorne-server-lua">View on GitHub</a>
+
+          <h1 id="project_title">Hawkthorne Packed Nodes</h1>
+          <h2 id="project_tagline"></h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/NimbusBP1729/hawkthorne-server-lua/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/NimbusBP1729/hawkthorne-server-lua/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Packed Representation of Nodes</h1>
+
+<p>The udp sockets we've implemented do not allow sending arbitrary tables. To that end, we needed to incorporate a straightforward mechanism as follows:</p>
+
+<p>We design these packed representations of nodes to contain only those attributes which the client needs to draw it.</p>
+
+<h2>Format</h2>
+
+<p>The string that represents the node is a sequence of parameters, each of which end with <code>?</code></p>
+
+<p>A parameter is a triplet separated by two <code>!</code> s</p>
+
+<p>The triplet is identified by TYPE,NAME, and VALUE</p>
+
+<h3>TYPE is an element of the set {B,N,S}</h3>
+
+<p><code>B</code> indicate the parameter is a boolean</p>
+
+<p><code>N</code> indicates the parameter is a number</p>
+
+<p><code>S</code> indicates the parameter is a string</p>
+
+<h3>NAME</h3>
+
+<p>NAME is the name of the parameter</p>
+
+<h3>VALUE</h3>
+
+<p>VALUE is the value of the parameter</p>
+
+<h2>Example</h2>
+
+<p><code>S!id!player1729?N!x!100?N!y!200?</code></p>
+
+<p>translates to</p>
+
+<p><code>{id="player1729", x=100, y=200}</code></p>
+
+<p>See also <a href="packedParameters.html">Packed Node Parameters</a></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Hawkthorne Packed Nodes maintained by <a href="https://github.com/NimbusBP1729">NimbusBP1729</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
