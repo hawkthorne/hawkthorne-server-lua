@@ -4,11 +4,11 @@
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Hawkthorne Multiplayer : " />
+    <meta name="description" content="Hawkthorne Packed Nodes : " />
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Hawkthorne Multiplayer</title>
+    <title>Hawkthorne Packed Nodes</title>
   </head>
 
   <body>
@@ -18,7 +18,7 @@
         <header class="inner">
           <a id="forkme_banner" href="https://github.com/NimbusBP1729/hawkthorne-server-lua">View on GitHub</a>
 
-          <h1 id="project_title">Hawkthorne Multiplayer</h1>
+          <h1 id="project_title">Hawkthorne Packed Nodes</h1>
           <h2 id="project_tagline"></h2>
 
             <section id="downloads">
@@ -31,78 +31,52 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h1>Multiplayer Client/Server interface</h1>
+        <h1>Packed Representation of Nodes</h1>
 
-<h2>Client to Server</h2>
+<p>The udp sockets we've implemented do not allow sending arbitrary tables. To that end, we needed to incorporate a straightforward mechanism as follows:</p>
 
-<p>Note:
-the <strong>entity</strong> is an id assigned to the player when he tries to register.
-<strong>obj</strong> and <strong>plyr</strong> sent through the udp sockets are <a href="http://nimbusbp1729.github.com/hawkthorne-server-lua/packed.html">packed representations</a> of an object and a player respectively.</p>
+<p>We design these packed representations of nodes to contain only those attributes which the client needs to draw it.</p>
 
-<p>Supported commands and when the should be sent:</p>
+<h2>Format</h2>
 
-<p>when the client presses a button</p>
+<p>The string that represents the node is a sequence of parameters, each of which end with <code>?</code></p>
 
-<pre><code>(entity) keypressed (button)
-</code></pre>
+<p>A parameter is a triplet separated by two <code>!</code> s</p>
 
-<p>when the client releases a button</p>
+<p>The triplet is identified by TYPE,NAME, and VALUE</p>
 
-<pre><code>(entity) keyreleased (button)    
-</code></pre>
+<h3>TYPE is an element of the set {B,N,S}</h3>
 
-<p>when the client requests an update of level <code>level_name</code>
-Note: it is expected that the server responds with <code>updatePlayer</code> and <code>updateObject</code></p>
+<p><code>B</code> indicate the parameter is a boolean</p>
 
-<pre><code>(entity) update (levelName)
-</code></pre>
+<p><code>N</code> indicates the parameter is a number</p>
 
-<p>when the client registers a character by the name of <code>name</code> with costume <code>costume</code>    </p>
+<p><code>S</code> indicates the parameter is a string</p>
 
-<pre><code>(entity) register (name) (costume)
-</code></pre>
+<h3>NAME</h3>
 
-<p>TODO: registration response with entity assignment</p>
+<p>NAME is the name of the parameter</p>
 
-<p>when the client decides to enter a specific level</p>
+<h3>VALUE</h3>
 
-<pre><code>(entity) enter (level)    
-</code></pre>
+<p>VALUE is the value of the parameter</p>
 
-<p>TODO: character costume switch</p>
+<h2>Example</h2>
 
-<h2>Server to Client</h2>
+<p><code>S!id!player1729?N!x!100?N!y!200?</code></p>
 
-<p>when the server gets a request from an entity to <code>update</code>
-this is sent to a single client</p>
+<p>translates to</p>
 
-<pre><code>(entity) updatePlayer (plyr)
-</code></pre>
+<p><code>{id="player1729", x=100, y=200}</code></p>
 
-<p>when the server gets a request from an entity to     update<br>
-this is sent to a single client</p>
-
-<pre><code>(entity) updateObject (obj)    
-</code></pre>
-
-<p>when the server notices a player switching between backend gamestates
-this is sent to all clients</p>
-
-<pre><code>(entity) stateSwitch (fromLevel) (toLevel)    
-</code></pre>
-
-<p>when the server wants to tell a client to make a sound
-this may or may not be sent to all clients</p>
-
-<pre><code>(entity) sound (soundFile)
-</code></pre>
+<p>See also <a href="packedParameters.html">Packed Node Parameters</a></p>
       </section>
     </div>
 
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
-        <p class="copyright">Hawkthorne Multiplayer maintained by <a href="https://github.com/NimbusBP1729">NimbusBP1729</a></p>
+        <p class="copyright">Hawkthorne Packed Nodes maintained by <a href="https://github.com/NimbusBP1729">NimbusBP1729</a></p>
         <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
