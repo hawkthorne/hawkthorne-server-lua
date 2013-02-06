@@ -292,7 +292,7 @@ end
 function Weapon:throwProjectile()
     local proj = Projectile.new( self.projectile, self.collider )
     proj.id = Level.generateObjectId()
-    Gamestate.currentState().nodes[proj] = proj
+    self.containerLevel.nodes[proj] = proj
 end
 
 function Weapon:floor_pushback(node, new_y)

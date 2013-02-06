@@ -83,6 +83,7 @@ end
 
 function Platform:collide_end(node)
     if node.isPlayer then
+        self.players_touched = self.players_touched or {}
         self.players_touched[node] = nil
         node.platform_dropping = false
     end

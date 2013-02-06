@@ -177,7 +177,7 @@ function Level.new(name)
     level.collider = HC(100, on_collision, collision_stop)
     level.offset = getCameraOffset(level.map)
     level.music = getSoundtrack(level.map)
-    level.spawn = (level.map.properties and level.map.properties.respawn) or 'studyroom'
+    level.spawn = (level.map.properties and level.map.properties.respawn) or 'hallway'
     level.title = getTitle(level.map)
  
     level:panInit()
@@ -199,6 +199,7 @@ function Level.new(name)
             v.objectlayer = 'nodes'
             node = NodeClass.new( v, level.collider )
             if(v.name=="") then v.name = nil end
+            node.players_touched = node.players_touched or {}
             --I'm sorry I had to do this, but the type was being used inconsistently
             node.super_type = v.type
             node.name = v.name or node.type
@@ -476,6 +477,7 @@ function Level:leave(player)
             node:collide_end(player)
         end
     end
+    self.players[player.id] = nil
 end
 
 function Level:keyreleased( button , player)

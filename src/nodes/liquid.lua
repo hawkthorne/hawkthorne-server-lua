@@ -38,7 +38,7 @@ function Liquid.new(node, collider)
     liquid.width = node.width
     liquid.height = node.height
 
-    assert(np.sprite, 'Liquid Object (' .. node.name .. ') must specify "sprite" property ( path )' )
+    assert(np.sprite, 'Liquid Object (' .. (node.name or '<nil>') .. ') must specify "sprite" property ( path )' )
     liquid.image = love.graphics.newImage( np.sprite )
     liquid.tile_height = np.tile_height and tonumber(np.tile_height) or 24
     liquid.tile_width = np.tile_width and tonumber(np.tile_width) or 24

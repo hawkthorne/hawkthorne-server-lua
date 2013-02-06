@@ -20,7 +20,7 @@ end
 
 function RaveSwitch:switch(player)
     local level = Gamestate.get(self.level)
-    local current = Gamestate.currentState()
+    local current = self.containerLevel
 
     current.collider:setPassive(player.bb)
     Gamestate.switch(self.level)

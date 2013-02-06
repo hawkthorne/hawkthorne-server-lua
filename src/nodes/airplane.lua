@@ -32,7 +32,7 @@ function Airplane.new(node, collider)
 end
 
 function Airplane:enter(dt)
-    self.map = gamestate.currentState().map
+    self.map = self.containerLevel.map
     self.engineNoise = sound.startSfx( 'click', nil, self.node.x, self.node.y, self.noiseRadius )
 end
 
@@ -60,8 +60,8 @@ function Airplane:leave()
 end
 
 function Airplane:update(dt, player)
-    self.airplane:update(dt)
-    self.platform:update(dt)
+    self.airplane:update(dt, player)
+    self.platform:update(dt, player)
     
     self.node.x = self.node.x - dt * self.speed
     

@@ -23,7 +23,7 @@ function CeilingHippie.new( node, collider )
 end
 
 function CeilingHippie:enter()
-    self.floor = gamestate.currentState().map.objectgroups.floor.objects[1].y - self.height
+    self.floor = self.containerLevel.map.objectgroups.floor.objects[1].y - self.height
 end
 
 function CeilingHippie:update(dt, player)
@@ -31,9 +31,12 @@ function CeilingHippie:update(dt, player)
         if player.position.x + player.bbox_width + 36 >= self.node.x then
             sound.playSfx( 'hippy_enter' )
 
-            local level = gamestate.currentState()
+            local level = self.containerLevel
             local node = enemy.new( self.node, self.collider, 'hippy' )
-            node.id = Level.generateObjectId()
+            node.id = require("level").generateObjectId()
+            node.super_type = "enemy"
+            node.name = "hippy"
+            node.containerLevel = level
             level.nodes[node] = node
             self.hippie = node
     

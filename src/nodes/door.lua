@@ -85,12 +85,14 @@ function Door:switch(player)
     end
     
     local old_level = current
-    old_level.players[player.id]=nil
-    --TODO:remove player's attack boundingbbox
-    old_level.collider:remove(player.bb)
-    player.bb = nil
-    old_level.collider:remove(player.attack_box.bb)
-    player.attack_box.bb = nil
+    old_level:leave(player)
+    
+    --must go to a named door or the overworld
+    assert(self.to or self.level=="overworld")
+    print(self.to)
+    level:enter(old_level,self.to, player)
+    
+    
     local msg = string.format("%s %s %s %s",player.id,"stateSwitch",player.level, self.level)
     server:sendtoplayer(msg,"*")
     player.level=self.level

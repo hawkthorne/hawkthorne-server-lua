@@ -41,7 +41,7 @@ function HiddenDoorTrigger:update(dt)
 end
 
 function HiddenDoorTrigger:enter()
-    Gamestate.currentState().doors[self.target].node:hide()
+    self.containerLevel.doors[self.target].node:hide()
 end
 
 function HiddenDoorTrigger:draw()
@@ -73,7 +73,7 @@ function HiddenDoorTrigger:keypressed( button, player )
         player.freeze = true
         self.prompt = Prompt.new(self.message, function(result)
             if result == 'Yes' then
-              Gamestate.currentState().doors[self.target].node:show()
+              self.containerLevel.doors[self.target].node:show()
             end
             player.freeze = false
             self.fixed = result == 'Yes'

@@ -168,6 +168,10 @@ if correctVersion then
                 end
             end
             --update players for client(s)
+       elseif cmd == 'changeCostume' then
+            local name,costume = parms:match("^(%S*) (.*)")
+            players[entity].character.name=name
+            players[entity].character.costume=costume
        elseif cmd == 'register' then
             local name,costume = parms:match("^(%S*) (.*)")
             players[entity] = Player.new()

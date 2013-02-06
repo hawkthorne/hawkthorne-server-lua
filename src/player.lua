@@ -492,7 +492,6 @@ function Player:update( dt )
 
     self.healthText.y = self.healthText.y + self.healthVel.y * dt
     
-    sound.adjustProximityVolumes()
 end
 
 ---
