@@ -1,77 +1,156 @@
-<!doctype html>
-<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
-<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
+<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
 
-  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
-  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-  <script type="text/javascript" src="javascripts/script.js"></script>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
 
-  <title>Multiplayer Hawkthorne</title>
-  <meta name="description" content="">
+    <title>Multiplayer Hawkthorne by NimbusBP1729</title>
+  </head>
 
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <body>
 
-</head>
-
-<body>
-
-  <div class="wrapper">
     <header>
-      <h1 class="title">Multiplayer Hawkthorne</h1>
-    </header>
-    <div id="container">
-      <p class="tagline"></p>
-      <div id="main" role="main">
-        <div class="download-bar">
-        <div class="inner">
-          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua/tarball/master" class="download-button tar"><span>Download</span></a>
-          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua/zipball/master" class="download-button zip"><span>Download</span></a>
-          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua" class="code">View Multiplayer Hawkthorne on GitHub</a>
-        </div>
-        <span class="blc"></span><span class="trc"></span>
-        </div>
-        <article class="markdown-body">
-          <p>This project derives from kyle conroy's <a href="https://github.com/kyleconroy/hawkthorne-journey">Journey to the Center of Hawkthorne</a> project.</p>
+      <div class="container">
+        <h1>Multiplayer Hawkthorne</h1>
+        <h2></h2>
 
-<p>Where the main project focuses on single player campaign this is multiple projects for multiplayer.</p>
+        <section id="downloads">
+          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>Journey to the Center of Hawkthorne</h1>
+
+<p>This project is a derivative of Kyle Conroy's <a href="https://github.com/kyleconroy/hawkthorne-journey">Journey to the Center of Hawkthorne</a> project. Journey to the Center of Hawkthorne is a sidescrolling game based on community's Digital Estate Planning episode.</p>
+
+<p>Where the main project focuses on single player campaign, this is multiple projects all designed with the aim of supporting multiplayer over a network.</p>
 
 <p><a href="https://github.com/NimbusBP1729/hawkthorne-server-lua">Lua Server</a></p>
 
 <p><a href="https://github.com/NimbusBP1729/hawkthorne-client-lua">Lua Client</a></p>
 
-<p><a href="https://github.com/NimbusBP1729/hawkthorne-client-java">Java Client</a></p>
+<p><a href="https://github.com/NimbusBP1729/hawkthorne-client-java">Java Client</a> —
+<a href="nimbusbp1729.github.com/hawkthorne-client-java/doc">javadocs</a></p>
 
 <p>Java Server will be published sooner or later</p>
 
-<p><a href="udpMessages.html">interface</a></p>
-
 <p>README for people who want to test it out without looking at code
 <a href="https://dl.dropbox.com/u/13978314/hawkthorne/README.txt">https://dl.dropbox.com/u/13978314/hawkthorne/README.txt</a></p>
-        </article>
-      </div>
+
+<h1>Communication Interface for Multiplayer Client/Server</h1>
+
+<p>Note: the <code>entity</code> is an id assigned to the player when he tries to register. 
+<code>obj</code> and <code>plyr</code> sent through the UDP sockets are packed representations of an object and a player respectively.</p>
+
+<h2>Supported commands and when they should be sent:</h2>
+
+<h3>Client to Server</h3>
+
+<p>when the client presses a button</p>
+
+<pre><code>(entity) keypressed (button)
+</code></pre>
+
+<p>when the client releases a button</p>
+
+<pre><code>(entity) keyreleased (button)    
+</code></pre>
+
+<p>when the client requests an update of level level_name Note: it is expected that the server responds with updatePlayer and updateObject</p>
+
+<pre><code> (entity) update (levelName)
+</code></pre>
+
+<p>when the client registers a character by the name of name with costume costume</p>
+
+<pre><code>(entity) register (name) (costume)
+</code></pre>
+
+<p>TODO: registration response with entity assignment</p>
+
+<p>when the client decides to enter a specific level</p>
+
+<pre><code>(entity) enter (level)    
+</code></pre>
+
+<p>TODO: character costume switch</p>
+
+<h3>Server to Client</h3>
+
+<p>when the server gets a request from an entity to update this is sent to a single client</p>
+
+<pre><code>(entity) updatePlayer (plyr)
+</code></pre>
+
+<p>when the server gets a request from an entity to update<br>
+this is sent to a single client</p>
+
+<pre><code>(entity) updateObject (obj)    
+</code></pre>
+
+<p>when the server notices a player switching between backend gamestates this is sent to all clients</p>
+
+<pre><code>(entity) stateSwitch (fromLevel) (toLevel)    
+</code></pre>
+
+<p>when the server wants to tell a client to make a sound this may or may not be sent to all clients</p>
+
+<pre><code>(entity) sound (soundFile)
+</code></pre>
+
+<h1>Packed Representation of Nodes</h1>
+
+<p>The UDP sockets we've implemented do not allow sending arbitrary tables. To that end, we needed to incorporate a straightforward mechanism as follows:</p>
+
+<p>We design these packed representations of nodes to contain only those attributes which the client needs to draw it.</p>
+
+<h2>Format</h2>
+
+<p>The string that represents the node is a sequence of parameters, each of which end with <code>?</code></p>
+
+<p>A parameter is a triplet separated by two <code>!</code> s</p>
+
+<p>The triplet is identified by TYPE,NAME, and VALUE</p>
+
+<h3>TYPE</h3>
+
+<p>TYPE is an element of the set {B,N,S}</p>
+
+<p><code>B</code> indicate the parameter is a boolean</p>
+
+<p><code>N</code> indicates the parameter is a number</p>
+
+<p><code>S</code> indicates the parameter is a string</p>
+
+<h3>NAME</h3>
+
+<p>NAME is the name of the parameter</p>
+
+<h3>VALUE</h3>
+
+<p>VALUE is the value of the parameter</p>
+
+<p>Example:</p>
+
+<pre><code>S!id!player1729?N!x!100?N!y!200?    
+</code></pre>
+
+<p>translates to</p>
+
+<pre><code>{id="player1729", x=100, y=200}
+</code></pre>
+      </section>
     </div>
-    <footer>
-      <div class="owner">
-      <p><a href="https://github.com/NimbusBP1729" class="avatar"><img src="https://secure.gravatar.com/avatar/30a6b1be0245cbcc3376a514a3c31f46?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png" width="48" height="48"/></a> <a href="https://github.com/NimbusBP1729">NimbusBP1729</a> maintains <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua">Multiplayer Hawkthorne</a></p>
 
-
-      </div>
-      <div class="creds">
-        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="http://twitter.com/jonrohan/">Jon Rohan</a></small>
-      </div>
-    </footer>
-  </div>
-  <div class="current-section">
-    <a href="#top">Scroll to top</a>
-    <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua/tarball/master" class="tar">tar</a><a href="https://github.com/NimbusBP1729/hawkthorne-server-lua/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
-    <p class="name"></p>
-  </div>
-
-  
-</body>
+    
+  </body>
 </html>
