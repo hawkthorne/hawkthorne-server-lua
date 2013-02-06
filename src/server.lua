@@ -3,7 +3,9 @@ local socket = require "socket"
 local Server = {}
 Server.__index = Server
 Server.singleton = nil
---the port that is used when a new instance is created
+Server.DEBUG = false
+
+local function __NULL__() end
 
 function Server.new(port)
     local server = {}
@@ -19,7 +21,12 @@ function Server.new(port)
         file_name = prefix.."_"..i..suffix
         i = i+1
     end
-    server.log_file = io.open(file_name, "w")
+    if Server.DEBUG then
+        server.log_file = io.open(file_name, "w")
+    else
+        server.log_file = {write=__NULL__}
+    end
+
     
     server.udp = socket.udp()
     server.udp:settimeout(0)
@@ -54,7 +61,6 @@ function Server:getPort(entity)
   return self.clients[entity].port
 end
 function Server:receivefrom()
-    --require("mobdebug").start()
     local data, msg_or_ip, port_or_nil = self.udp:receivefrom()
     local entity = data and data:match("^(%S*) (.*)")
     if msg_or_ip and msg_or_ip ~= 'timeout' and entity and not self.clients[entity] then 

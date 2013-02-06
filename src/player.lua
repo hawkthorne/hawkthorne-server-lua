@@ -70,7 +70,8 @@ function Player.new(collider)
     plyr.inventory = Inventory.new( plyr )
     
     plyr.money = plyr.startingMoney
-    plyr.lives = 3
+    --infinite lives until I fix the gameover screen
+    plyr.lives = math.huge
 
     plyr.jumpQueue = Queue.new()
     plyr.halfjumpQueue = Queue.new()
