@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Multiplayer Hawkthorne by NimbusBP1729</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Multiplayer Hawkthorne</h1>
+        <h2></h2>
+
+        <section id="downloads">
+          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+
+<h1>Communication Interface for Multiplayer Client/Server</h1>
+
+<p>Note: the <code>entity</code> is an id assigned to the player when he tries to register. 
+<code>obj</code> and <code>plyr</code> sent through the UDP sockets are packed representations of an object and a player respectively.</p>
+
+<h2>Supported commands and when they should be sent:</h2>
+
+<h3>Client to Server</h3>
+
+<p>when the client presses a button</p>
+
+<pre><code>(entity) keypressed (button)
+</code></pre>
+
+<p>when the client releases a button</p>
+
+<pre><code>(entity) keyreleased (button)    
+</code></pre>
+
+<p>when the client requests an update of level level_name Note: it is expected that the server responds with updatePlayer and updateObject</p>
+
+<pre><code> (entity) update (levelName)
+</code></pre>
+
+<p>when the client registers a character by the name of (name) with costume (costume)</p>
+
+<pre><code>(entity) register (name) (costume)
+</code></pre>
+
+<p>when the client switches to a character by the name of (name) with costume (costume)</p>
+
+<pre><code>(entity) changeCostume (name) (costume)
+</code></pre>
+
+<p>when the client decides to enter a specific level</p>
+
+<pre><code>(entity) enter (level)    
+</code></pre>
+
+<h3>Server to Client</h3>
+
+<p>when the server gets a request from an entity to update this is sent to a single client</p>
+
+<pre><code>(entity) updatePlayer (plyr)
+</code></pre>
+
+<p>when the server gets a request from an entity to update<br>
+this is sent to a single client</p>
+
+<pre><code>(entity) updateObject (obj)    
+</code></pre>
+
+<p>when the server notices a player switching between backend gamestates this is sent to all clients</p>
+
+<pre><code>(entity) stateSwitch (fromLevel) (toLevel)    
+</code></pre>
+
+<p>when the server wants to tell a client to make a sound this may or may not be sent to all clients</p>
+
+<pre><code>(entity) sound (soundFile)
+</code></pre>
+
+      </section>
+    </div>
+
+    
+  </body>
+</html>
