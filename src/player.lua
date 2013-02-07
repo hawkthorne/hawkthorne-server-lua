@@ -2,12 +2,13 @@ local Queue = require 'queue'
 local Timer = require 'vendor/timer'
 local window = require 'window'
 local cheat = require 'cheat'
-local sound = require 'vendor/TEsound'
 local game = require 'game'
 local character = require 'character'
 local PlayerAttack = require 'playerAttack'
 local Statemachine = require 'datastructures/lsm/statemachine'
 local Gamestate = require 'vendor/gamestate'
+local sound = require 'vendor/TEsound'
+local Messages = require 'messages'
 
 local healthbar = love.graphics.newImage('images/healthbar.png')
 healthbar:setFilter('nearest', 'nearest')
@@ -398,15 +399,13 @@ function Player:update( dt )
         else
             self.velocity.y = -670
         end
-        local msg = string.format("%s %s %s",self.id,"sound","jump")
-        server:sendtoplayer(msg,"*")
+        sound.playSfx("jump")
     elseif jumped and not self.jumping and self:solid_ground()
         and not self.rebounding and self.liquid_drag then
      -- Jumping through heavy liquid:
         self.jumping = true
         self.velocity.y = -270
-        local msg = string.format("%s %s %s",self.id,"sound","jump")
-        server:sendtoplayer(msg,"*")
+        sound.playSfx("jump")
     end
 
     if halfjumped and self.velocity.y < -450 and not self.rebounding and self.jumping then
@@ -516,8 +515,7 @@ function Player:die(damage)
         return
     end
 
-    local msg = string.format("%s %s %s",self.id,"sound", "damage_"..        math.max(self.health, 0) )
-    server:sendtoplayer(msg,"*")
+    sound.playSfx("damage_"..math.max(self.health, 0) )
     self.rebounding = true
     self.invulnerable = true
     --ach:achieve('damage', damage)
@@ -536,17 +534,16 @@ function Player:die(damage)
         self.lives = self.lives - 1
         --ach:achieve('die')
         -- sound.stopMusic()
-        local msg = string.format("%s %s %s",self.id,"sound","death")
-        server:sendtoplayer(msg,"*")
-            -- start death sequence
+        sound.playSfx("death")
+        -- start death sequence
         self.respawn = Timer.add(3, function()
             self:revive()
             if self.lives <= 0 then
-                server:sendtoplayer(string.format("%s %s %s %s", self.id, 'stateSwitch',self.level,'gameover'),"*")
+                Messages.broadcast(string.format("%s %s %s %s", self.id, 'stateSwitch',self.level,'gameover'))
             else
                 --TODO: use leave() and enter()
                 local respawnLevel = Gamestate.get(self.level).spawn
-                server:sendtoplayer(string.format("%s %s %s %s", self.id, 'stateSwitch',self.level,respawnLevel),"*")
+                Messages.broadcast(string.format("%s %s %s %s", self.id, 'stateSwitch',self.level,respawnLevel))
                 local door = Gamestate.get(respawnLevel).doors["main"]
                 self.position.x = door.x + door.node.width/2 - self.width/2
                 self.position.y = door.y + door.node.height - self.height

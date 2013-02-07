@@ -1,6 +1,7 @@
 local Timer = require 'vendor/timer'
 local sound = require 'vendor/TEsound'
 
+
 return {
     name = 'snowman',
     attack_sound = 'acorn_growl',
@@ -54,7 +55,7 @@ return {
         if enemy.state == 'attack' then
             enemy.state = 'dyingattack'
         else
-            sound.playSfx( "acorn_squeak" )
+            sound.playSfx("acorn_squeak")
             enemy.state = 'dying'
         end
     end,

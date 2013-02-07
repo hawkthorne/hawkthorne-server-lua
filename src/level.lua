@@ -6,7 +6,6 @@ local HC = require 'vendor/hardoncollider'
 local Timer = require 'vendor/timer'
 local Tween = require 'vendor/tween'
 local window = require 'window'
-local sound = require 'vendor/TEsound'
 local music = {}
 
 local node_cache = {}

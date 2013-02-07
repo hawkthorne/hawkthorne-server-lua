@@ -19,6 +19,7 @@ if correctVersion then
   local Player = require 'player'
   local socket = require "socket"
   local Server = require 'server'
+  local Messages = require 'messages'
 
   local server = nil
   local players = nil -- players[player_id] = player
@@ -83,22 +84,12 @@ if correctVersion then
             local player = players[entity]
             player.key_down[button] = false
             if level then level:keyreleased( button, player) end
-        elseif cmd == 'keydown' then
-            -- local button = parms:match("^(%S*)")
-            -- local level = players[entity].level
-            -- local player = players[entity]
         elseif cmd == 'enter' then
             local level = parms:match("^(%S*)")
             levels[level] = levels[level] or Gamestate.load(level)
             level = levels[level]
             local player = players[entity]
             level:enter(require("overworld"),"main",player)
-        elseif cmd == 'enterLevel' then
-            error("deprecated enterLevel:"..data)
-            local level = parms:match("^(%S*)")
-            --TODO:remove the necessity of this line
-            players[entity].level = level
-            players[entity]:enter(Gamestate.get(level))
         elseif cmd == 'update' then
             --sends an update back to the client
             local level = parms:match("^(%S*)")
@@ -168,6 +159,14 @@ if correctVersion then
                 end
             end
             --update players for client(s)
+            for _,msg in pairs(sound.getSounds(entity)) do
+                    server:sendtoip(msg, msg_or_ip,  port_or_nil)
+            end
+            for _,msg in pairs(Messages.getMessages(entity)) do
+                server:sendtoip(msg, msg_or_ip,  port_or_nil)
+            end
+            
+            
        elseif cmd == 'changeCostume' then
             local name,costume = parms:match("^(%S*) (.*)")
             players[entity].character.name=name

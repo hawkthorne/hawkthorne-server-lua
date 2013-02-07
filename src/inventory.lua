@@ -8,6 +8,7 @@ local anim8 = require 'vendor/anim8'
 local sound = require 'vendor/TEsound'
 local camera = require 'camera'
 local debugger = require 'debugger'
+
 local Server = require 'server'
 local server = Server.getSingleton()
 
@@ -486,8 +487,7 @@ function Inventory:addItem(item)
         return false
     end
     self.pages[pageIndex][slot] = item
-    local msg = string.format("%s %s %s",self.player.id,"sound","pickup")
-    server:sendtoplayer(msg,"*")        
+    sound.playSfx("pickup")   
     return true
 end
 

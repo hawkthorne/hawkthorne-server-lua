@@ -3,6 +3,7 @@ local Tween = require 'vendor/tween'
 local anim8 = require 'vendor/anim8'
 local sound = require 'vendor/TEsound'
 local server = (require 'server').getSingleton()
+local Messages = require 'messages'
 
 local Door = {}
 Door.__index = Door
@@ -92,9 +93,7 @@ function Door:switch(player)
     print(self.to)
     level:enter(old_level,self.to, player)
     
-    
-    local msg = string.format("%s %s %s %s",player.id,"stateSwitch",player.level, self.level)
-    server:sendtoplayer(msg,"*")
+    Messages.broadcast(string.format("%s %s %s %s",player.id,"stateSwitch",player.level, self.level))
     player.level=self.level
 
     local current = level

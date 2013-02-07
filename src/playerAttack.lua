@@ -56,8 +56,7 @@ function PlayerAttack:collide(node, dt, mtv_x, mtv_y)
                           }
                         }
     if node.hurt then
-        local msg = string.format("%s %s %s",self.player.id,"sound","punch")
-        server:sendtoplayer(msg,"*")
+        sound.playSfx("punch")
         local attackSprite = Sprite.new(attackNode, collider)
         attackSprite.id = require("level").generateObjectId()
         local level = Gamestate.get(self.player.level)

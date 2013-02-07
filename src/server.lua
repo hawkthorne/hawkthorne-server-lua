@@ -47,11 +47,6 @@ function Server.getSingleton()
     return Server.singleton
 end
 
-function Server:addNewClient(entity,ip,port)
-    if not self.clients[entity] then 
-        self.clients[entity] = {ip = ip,port=port}
-    end
-end
 
 function Server:getIp(entity)
   return self.clients[entity].ip
@@ -63,8 +58,8 @@ end
 function Server:receivefrom()
     local data, msg_or_ip, port_or_nil = self.udp:receivefrom()
     local entity = data and data:match("^(%S*) (.*)")
-    if msg_or_ip and msg_or_ip ~= 'timeout' and entity and not self.clients[entity] then 
-        self:addNewClient(entity,msg_or_ip,port_or_nil)
+    if msg_or_ip and msg_or_ip ~= 'timeout' and entity then 
+        self.clients[entity] = {ip = ip,port=port,lastUpdate=os.time()}
     end
     if data then
         self.log_file:write("FROM CLIENT: "..(data or "<nil>").."\n")
@@ -77,11 +72,7 @@ end
 
 function Server:sendtoplayer(message,player_entity)
     assert(type(player_entity)=="string","String required")
-    if player_entity=="*" and self.clients then
-        for k,v in pairs(self.clients) do
-            self:sendtoip(message, v.ip, v.port or port)
-        end
-    elseif self.clients then
+    if self.clients then
         self:sendtoip(message,self:getIp(player_entity),self:getPort(player_entity))
     else
        print("bad player: "..(player_entity or 'nil'))
@@ -89,11 +80,7 @@ function Server:sendtoplayer(message,player_entity)
 end
 
 function Server:sendtoip(message,ip,port)
-    if ip=="*" then
-        for k,v in pairs(self.clients) do
-            self.udp:sendto(message, v.ip, v.port or port)
-        end
-    elseif self.clients then
+    if self.clients then
         self.udp:sendto(message,ip,port)
         self.log_file:write("TO CLIENT: '"..(message or "<nil>").."'\n")
         self.log_file:write("         : "..ip..","..port.."\n")
