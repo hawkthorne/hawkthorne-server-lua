@@ -87,6 +87,8 @@ function Token:collide(node, dt, mtv_x, mtv_y)
             self.active = false
             self.item.onPickup( player, self.item.value )
             self.collider:remove(self.bb)
+            self.bb = nil
+            self.containerLevel.nodes[self] = nil
         end
     end
 end
