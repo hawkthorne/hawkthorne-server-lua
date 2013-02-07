@@ -4,10 +4,11 @@
 
 This 2d platformer is based on Community's [Digital Estate Planning][estate]
 episode. It's built using the [LÖVE](https://love2d.org/) game engine. Please
-[report any issues or bugs][githubissues] you have with the game!
+[report any issues or bugs][multiplayerissues] you have with the game!
 
 [estate]: http://en.wikipedia.org/wiki/Digital_Estate_Planning
-[githubissues]: https://github.com/kyleconroy/hawkthorne-journey/issues?state=open
+[singleplayerissues]: https://github.com/kyleconroy/hawkthorne-journey/issues?state=open
+[multiplayerissues]: https://github.com/NimbusBP1729/hawkthorne-journey/issues?state=open
 
 ## Downloads ( play the game )
  
@@ -20,11 +21,12 @@ If you already have love installed, you can download the
 
 Linux users: Install [LÖVE](https://love2d.org/). You'll need at least version
 0.8.0.  (Standard Ubuntu packages are too old.) After installing LÖVE, download
-the [.love file][love] and run it. Everyone gets to play!
+the [server file][loveserver] and run it,  then download the [client file][loveclient] and run it.
+Everyone gets to play!
 
 [loveclient]: https://dl.dropbox.com/u/13978314/hawkthorne/client.love
 [loveserver]: https://dl.dropbox.com/u/13978314/hawkthorne/server.love
-[libgdxclient]: https://dl.dropbox.com/u/13978314/hawkthorne/server.love
+[libgdxclient]: https://dl.dropbox.com/u/13978314/hawkthorne/javaClient.zip
 
 ## Development ( contribute to the game )
 
