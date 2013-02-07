@@ -12,12 +12,8 @@ episode. It's built using the [LÖVE](https://love2d.org/) game engine. Please
 
 ## Downloads ( play the game )
  
-- [OS X][osx]
-- [Windows 32-bit][win32]
-- [Windows 64-bit][win64]
-
 If you already have love installed, you can download the
-[hawkthorne.love][love] file and run the game from there.
+[server][loveserver] and [client][loveclient] files and run the game from there.
 
 Linux users: Install [LÖVE](https://love2d.org/). You'll need at least version
 0.8.0.  (Standard Ubuntu packages are too old.) After installing LÖVE, download
