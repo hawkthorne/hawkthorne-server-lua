@@ -1,4 +1,5 @@
 local socket = require "socket"
+local Messages = require "messages"
 
 local Server = {}
 Server.__index = Server
@@ -10,9 +11,8 @@ local function __NULL__() end
 function Server.new(port)
     local server = {}
     setmetatable(server, Server)
-    server.players = {} -- players[player_id] = player
     server.levels = {}  -- levels[level_name] = level
-    server.clients = {}
+    server.clients = {} -- clients[player_id] = {port, ip, lastUpdate, player}
     local prefix = "server"..os.date("%Y_%m_%d")
     local suffix = ".log"
     local file_name = prefix..suffix
@@ -30,7 +30,7 @@ function Server.new(port)
     
     server.udp = socket.udp()
     server.udp:settimeout(0)
-    server.port = port or 12345
+    server.port = port or 12346
     server.udp:setsockname('*', server.port)
     lube.bin:setseperators("?","!")
     return server
@@ -49,17 +49,22 @@ end
 
 
 function Server:getIp(entity)
+  error("deprecated for lack of transparency")
   return self.clients[entity].ip
 end
 
 function Server:getPort(entity)
+  error("deprecated for lack of transparency")
   return self.clients[entity].port
 end
 function Server:receivefrom()
     local data, msg_or_ip, port_or_nil = self.udp:receivefrom()
     local entity = data and data:match("^(%S*) (.*)")
     if msg_or_ip and msg_or_ip ~= 'timeout' and entity then 
-        self.clients[entity] = {ip = ip,port=port,lastUpdate=os.time()}
+        self.clients[entity] = self.clients[entity] or {}
+        self.clients[entity].ip = msg_or_ip
+        self.clients[entity].port=port_or_nil
+        self.clients[entity].lastUpdate=os.time()
     end
     if data then
         self.log_file:write("FROM CLIENT: "..(data or "<nil>").."\n")
@@ -70,12 +75,12 @@ function Server:receivefrom()
     return data, msg_or_ip, port_or_nil
 end
 
-function Server:sendtoplayer(message,player_entity)
-    assert(type(player_entity)=="string","String required")
+function Server:sendtoplayer(message,entity)
+    assert(type(entity)=="string","String required")
     if self.clients then
-        self:sendtoip(message,self:getIp(player_entity),self:getPort(player_entity))
+        self:sendtoip(message,self.clients[entity].ip,self.clients[entity].port)
     else
-       print("bad player: "..(player_entity or 'nil'))
+       print("bad player: "..(entity or 'nil'))
     end
 end
 
@@ -91,5 +96,13 @@ function Server:sendtoip(message,ip,port)
     end
 end
 
+function Server:unregister(entity)
+    --FIXME: unregister bug
+    -- old character is never properly removed.
+    self.log_file:write("ERROR: cannot unregister")
+    local level = self.clients[entity].player.level
+    Messages.broadcast(string.format("%s %s %s %s", entity, 'stateSwitch',level,'gameover'))
+    self.clients[entity] = nil
+end
 
 return Server

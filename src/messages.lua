@@ -1,12 +1,10 @@
-local Server = require 'server'
 local Messages = {}
-
-local server = Server.getSingleton()
 
 local soundList = {}
 
 function Messages.broadcast(msg)
-    for k,v in pairs(server.clients) do
+    --inline to prevent circular reference
+    for k,v in pairs(require("server").getSingleton().clients) do
         soundList[k] = soundList[k] or {} 
         table.insert(soundList[k],msg)
     end
@@ -17,5 +15,7 @@ function Messages.getMessages(entity)
     soundList[entity] = {}
     return entitySounds
 end
+
+--TODO a Messages.sendToPlayer(msg) function, useful for private chat
 
 return Messages

@@ -76,6 +76,7 @@ function Token:update(dt, player)
 end
 
 function Token:moveBoundingBox()
+    if not self.bb then return end
     self.bb:moveTo(self.position.x + self.height / 2, self.position.y + self.height / 2)
 end
 

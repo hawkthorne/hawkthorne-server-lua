@@ -539,7 +539,7 @@ function Player:die(damage)
         self.respawn = Timer.add(3, function()
             self:revive()
             if self.lives <= 0 then
-                Messages.broadcast(string.format("%s %s %s %s", self.id, 'stateSwitch',self.level,'gameover'))
+                server:unregister(self.id)
             else
                 --TODO: use leave() and enter()
                 local respawnLevel = Gamestate.get(self.level).spawn

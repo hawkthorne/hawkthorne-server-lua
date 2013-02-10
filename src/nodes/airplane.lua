@@ -33,7 +33,7 @@ end
 
 function Airplane:enter(dt)
     self.map = self.containerLevel.map
-    self.engineNoise = sound.startSfx( 'click', nil, self.node.x, self.node.y, self.noiseRadius )
+    --self.engineNoise = sound.startSfx( 'click', nil, self.node.x, self.node.y, self.noiseRadius )
 end
 
 function Airplane:collide(node, dt, mtv_x, mtv_y)
@@ -56,7 +56,7 @@ function Airplane:collide_end(node,dt)
 end
 
 function Airplane:leave()
-    sound.stopSfx( self.engineNoise )
+    --sound.stopSfx( self.engineNoise )
 end
 
 function Airplane:update(dt, player)

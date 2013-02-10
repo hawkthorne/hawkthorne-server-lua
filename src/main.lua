@@ -22,7 +22,6 @@ if correctVersion then
   local Messages = require 'messages'
 
   local server = nil
-  local players = nil -- players[player_id] = player
   local levels = nil -- levels[level_name] = level
 
   -- XXX Hack for level loading
@@ -35,6 +34,7 @@ if correctVersion then
   end
 
   function love.load(arg)
+    
     table.remove(arg, 1)
     cli:add_option("-p, --port=NAME", "The port to use")
     cli:add_option("--console", "Displays print info")
@@ -45,7 +45,6 @@ if correctVersion then
       Server.singleton = Server.new(port)
     end
     server = Server.getSingleton()
-    players = server.players -- players[player_id] = player
     levels = server.levels  -- levels[level_name] = level
 
 
@@ -72,23 +71,23 @@ if correctVersion then
         local entity, cmd, parms = data:match("^(%S*) (%S*) (.*)")
         if cmd == 'keypressed' then
             local button = parms:match("^(%S*)")
-            local player = players[entity]
+            local player = server.clients[entity].player
             local level = player.level
             level = Gamestate.get(level)
             player.key_down[button] = true
             if level then level:keypressed( button, player) end
         elseif cmd == 'keyreleased' then
             local button = parms:match("^(%S*)")
-            local level = players[entity].level
+            local level = server.clients[entity].player.level
             level = Gamestate.get(level)
-            local player = players[entity]
+            local player = server.clients[entity].player
             player.key_down[button] = false
             if level then level:keyreleased( button, player) end
         elseif cmd == 'enter' then
             local level = parms:match("^(%S*)")
             levels[level] = levels[level] or Gamestate.load(level)
             level = levels[level]
-            local player = players[entity]
+            local player = server.clients[entity].player
             level:enter(require("overworld"),"main",player)
         elseif cmd == 'update' then
             --sends an update back to the client
@@ -144,7 +143,8 @@ if correctVersion then
                     server:sendtoip(string.format("%s %s %s", objectBundle.id, 'updateObject', lube.bin:pack_node(objectBundle)), msg_or_ip,  port_or_nil)
                 end
             end
-            for i, plyr in pairs(players) do
+            for i, client in pairs(server.clients) do
+                    local plyr = client.player
                     local playerBundle  = {id = plyr.id,
                                           level = plyr.level,
                                           x = plyr.position.x, y = plyr.position.y,
@@ -169,19 +169,21 @@ if correctVersion then
             
        elseif cmd == 'changeCostume' then
             local name,costume = parms:match("^(%S*) (.*)")
-            players[entity].character.name=name
-            players[entity].character.costume=costume
+            server.clients[entity].player.character.name=name
+            server.clients[entity].player.character.costume=costume
        elseif cmd == 'register' then
             local name,costume = parms:match("^(%S*) (.*)")
-            players[entity] = Player.new()
-            players[entity].id = entity
+            server.clients[entity].player = Player.new()
+            server.clients[entity].player.id = entity
             --todo:remove town dependence
-            players[entity].level = 'overworld'
-            players[entity].ip_address = msg_or_ip
-            players[entity].character.name=name
-            players[entity].character.costume=costume
+            server.clients[entity].player.level = 'overworld'
+            server.clients[entity].player.ip = msg_or_ip
+            server.clients[entity].player.character.name=name
+            server.clients[entity].player.character.costume=costume
         elseif cmd == 'unregister' then
-            players[entity] = nil
+            server:unregister(parms)
+
+            --clients[parms].player = nil
         elseif cmd == 'quit' then
             running = false;
         else

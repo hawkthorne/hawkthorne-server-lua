@@ -122,8 +122,6 @@ function state:enter(previous)
 
     fonts.set( 'big' )
 
-    sound.playMusic( "overworld" )
-
     self.stand = anim8.newAnimation('once', g(Character:current().ow, 1), 1)
     self.walk = anim8.newAnimation('loop', g(Character:current().ow,2,Character:current().ow,3), 0.2)
     self.facing = 1

@@ -265,7 +265,6 @@ end
 
 
 function Level:enter( previous, door , player)
-    
     --ach:achieve('enter ' .. self.name)
     self.players[player.id] = player
     --only restart if it's an ordinary level
