@@ -128,7 +128,8 @@ if correctVersion then
                     end
                     
                     local objectBundle  = {level = level,
-                      x = math.round(node.x or node.position.x),y = math.round(node.y or node.position.y),
+                      x = math.round(node.x or node.position.x) + (node.offset_x or 0),
+                      y = math.round(node.y or node.position.y) + (node.offset_y or 0),
                       state = node.state,
                       position = framePosition,
                       direction = my_direction,
