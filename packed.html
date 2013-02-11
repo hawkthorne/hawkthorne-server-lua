@@ -70,6 +70,27 @@
 
 <pre><code>{id="player1729", x=100, y=200}
 </code></pre>
+
+
+<h2>Current parameters supported:</h2>
+<ul>Necessary Parameters
+  <li>type</li> the type of the node
+  <li>name</li> the name of the node, a subcategorization of type: e.g. type="enemy",name="acorn"
+  <li>x</li> The x-coordinate of the node
+  <li>y</li> The y-coordinate of the node
+    
+</ul>
+<ul>Optional Parameters
+  <li>state</li> The state of the node: i.e. walking, attack, et al. default is "default"
+  <li>position</li> The position within an animation sequence of the node
+  <li>direction</li> The direction a node faces
+  <li>id</li> A unique id for this node to distinguish it from all others
+  <li>width</li> width of node. used to draw liquids and objects in floorspaces
+  <li>height</li> height of node. used to draw liquids and objects in floorspaces
+  <li>sheetPath</li> path to the spriteSheet that the node uses to draw itself
+  <li>spritePath</li> path to the spriteSheet that the node uses to draw itself
+</ul>
+
       </section>
     </div>
 
