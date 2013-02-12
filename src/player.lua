@@ -190,7 +190,9 @@ function Player:collide(player, dt, mtv_x, mtv_y)
     
     self.position.y = self.position.y + mtv_y
     if mtv_y > 0 then
-        player:floor_pushback(self, self.position.y)
+        --Note: the atrocious (+2) is because of how we reset the bounding box in
+        -- moveBoundingBox()
+        player:floor_pushback(self, self.position.y - self.height + 3)
     end
 end
 
