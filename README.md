@@ -4,28 +4,25 @@
 
 This 2d platformer is based on Community's [Digital Estate Planning][estate]
 episode. It's built using the [LÖVE](https://love2d.org/) game engine. Please
-[report any issues or bugs][githubissues] you have with the game!
+[report any issues or bugs][multiplayerissues] you have with the game!
 
 [estate]: http://en.wikipedia.org/wiki/Digital_Estate_Planning
-[githubissues]: https://github.com/kyleconroy/hawkthorne-journey/issues?state=open
+[singleplayerissues]: https://github.com/kyleconroy/hawkthorne-journey/issues?state=open
+[multiplayerissues]: https://github.com/NimbusBP1729/hawkthorne-journey/issues?state=open
 
 ## Downloads ( play the game )
  
-- [OS X][osx]
-- [Windows 32-bit][win32]
-- [Windows 64-bit][win64]
-
 If you already have love installed, you can download the
-[hawkthorne.love][love] file and run the game from there.
+[server][loveserver] and [client][loveclient] files and run the game from there.
 
 Linux users: Install [LÖVE](https://love2d.org/). You'll need at least version
 0.8.0.  (Standard Ubuntu packages are too old.) After installing LÖVE, download
-the [.love file][love] and run it. Everyone gets to play!
+the [server file][loveserver] and run it,  then download the [client file][loveclient] and run it.
+Everyone gets to play!
 
-[love]: https://s3.amazonaws.com/hawkthorne.journey.builds/hawkthorne.love
-[osx]:  https://s3.amazonaws.com/hawkthorne.journey.builds/hawkthorne-osx.zip
-[win32]:  https://s3.amazonaws.com/hawkthorne.journey.builds/hawkthorne-win-x86.zip
-[win64]:  https://s3.amazonaws.com/hawkthorne.journey.builds/hawkthorne-win-x64.zip
+[loveclient]: https://dl.dropbox.com/u/13978314/hawkthorne/client.love
+[loveserver]: https://dl.dropbox.com/u/13978314/hawkthorne/server.love
+[libgdxclient]: https://dl.dropbox.com/u/13978314/hawkthorne/javaClient.zip
 
 ## Development ( contribute to the game )
 
@@ -38,8 +35,9 @@ on the subreddit.
 
 1. Create a free GitHub account - https://github.com/plans
 2. Set up Git on your machine - https://help.github.com/articles/set-up-git
-3. Fork this repository ( click the 'fork' button at the top of this page )
-4. Follow the machine specific instructions below
+3. Fork https://github.com/NimbusBP1729/hawkthorne-server-lua ( click the 'fork' button at the top of this page )
+4. Fork https://github.com/NimbusBP1729/hawkthorne-client-lua
+5. Follow the machine specific instructions below
 
 #### OSX
 
@@ -60,27 +58,52 @@ on the subreddit.
 		$ tar -xf tmx2lua.osx.tar
 		$ sudo cp tmx2lua /usr/bin/tmx2lua
 
-7. Clone your newly forked repository and change directory
-	Note: You have to copy your repository url from github ( ex: https://github.com/username/hawkthorne-journey.git )
+6. Clone your newly forked server repository and change directory
+	Note: You have to copy your repository url from github ( ex: https://github.com/username/hawkthorne-server-lua.git )
 
 		$ git clone (your forked repository url)
-		$ cd hawkthorne-journey
+		$ cd hawkthorne-server-lua
 
-8. Build your maps ( this must be done each time you change a map )
+7. Build your maps ( this must be done each time you change a map )
 
 		$ make maps
 
-9. Run the game
+8. Run the server
 
 		$ love src
+		
+	A black screen indicates success!
 
-	If you are testing a specific level, you can optionally pass that level name using the --level option
+	If you are testing a specific port, you can optionally pass that port using the --port option
 
-		$ love src --level=valley
+		$ love src --port=12345
 
-	You can also test a specific level as a specific character
+	You can also test a specific address and port
 
-		$ love src --level=valley --character=troy
+		$ love src --port=12345 --address="localhost"
+
+6. Clone your newly forked client repository and (in another terminal) change directory
+	Note: You have to copy your repository url from github ( ex: https://github.com/username/hawkthorne-server-lua.git )
+
+		$ git clone (your forked repository url)
+		$ cd hawkthorne-client-lua
+
+7. Build your maps ( this must be done each time you change a map )
+
+		$ make maps
+		
+
+8. Run the server
+
+		$ love src
+		
+	A blue error message screen indicates the address was found, but we failed to establish a connection.
+	Seeing the top of a map currently isn't an indication of the ability to connect.
+	
+	
+	If you are testing a specific port, you can optionally pass that port using the --port option
+
+		$ love src --port=12345
 
 ##### OpenAL Issues
 
@@ -112,28 +135,52 @@ alternate version [here](https://dl.dropbox.com/u/40773/love-0.8.0-openalsoft.zi
 		$ tar -xf tmx2lua.linux*.tar
 		$ sudo cp tmx2lua /usr/bin/tmx2lua
 
-6. Clone your newly forked repository and change directory
-	Note: You have to copy your repository url from github ( ex: https://github.com/username/hawkthorne-journey.git )
+6. Clone your newly forked server repository and change directory
+	Note: You have to copy your repository url from github ( ex: https://github.com/username/hawkthorne-server-lua.git )
 
 		$ git clone (your forked repository url)
-		$ cd hawkthorne-journey
+		$ cd hawkthorne-server-lua
 
 7. Build your maps ( this must be done each time you change a map )
 
 		$ make maps
 
-8. Run the game
+8. Run the server
 
 		$ love src
+		
+	A black screen indicates success!
 
-	If you are testing a specific level, you can optionally pass that level name using the --level option
+	If you are testing a specific port, you can optionally pass that port using the --port option
 
-		$ love src --level=valley
+		$ love src --port=12345
 
-	You can also test a specific level as a specific character
+	You can also test a specific address and port
 
-		$ love src --level=valley --character=troy
+		$ love src --port=12345 --address="localhost"
 
+6. Clone your newly forked client repository and (in another terminal) change directory
+	Note: You have to copy your repository url from github ( ex: https://github.com/username/hawkthorne-server-lua.git )
+
+		$ git clone (your forked repository url)
+		$ cd hawkthorne-client-lua
+
+7. Build your maps ( this must be done each time you change a map )
+
+		$ make maps
+		
+
+8. Run the server
+
+		$ love src
+		
+	A blue error message screen indicates the address was found, but we failed to establish a connection.
+	Seeing the top of a map currently isn't an indication of the ability to connect.
+	
+	
+	If you are testing a specific port, you can optionally pass that port using the --port option
+
+		$ love src --port=12345
 
 #### Windows
 
@@ -170,31 +217,53 @@ alternate version [here](https://dl.dropbox.com/u/40773/love-0.8.0-openalsoft.zi
     
         $ mv (tmx directory)/tmx2lua.windows64 hawkthorne-journey/
 
-4. Clone your newly forked repository and change directory
-	Note: You have to copy your repository url from github ( ex: https://github.com/username/hawkthorne-journey.git )
+6. Clone your newly forked server repository and change directory
+	Note: You have to copy your repository url from github ( ex: https://github.com/username/hawkthorne-server-lua.git )
 
 		$ git clone (your forked repository url)
-		$ cd hawkthorne-journey
-    
-    or
-    
-        go to github.com, navigate to your repository and click the "Clone in Windows" button
+		$ cd hawkthorne-server-lua
 
-5. Build your maps ( this must be done each time you change a map )
+7. Build your maps ( this must be done each time you change a map )
 
-		$ make
+		$ make maps
 
-6. Run the game
+8. Run the server
 
 		$ love src
+		
+	A black screen indicates success!
 
-	If you are testing a specific level, you can optionally pass that level name using the --level option
+	If you are testing a specific port, you can optionally pass that port using the --port option
 
-		$ love src --level=valley
+		$ love src --port=12345
 
-	You can also test a specific level as a specific character
+	You can also test a specific address and port
 
-		$ love src --level=valley --character=troy
+		$ love src --port=12345 --address="localhost"
+
+6. Clone your newly forked client repository and (in another terminal) change directory
+	Note: You have to copy your repository url from github ( ex: https://github.com/username/hawkthorne-server-lua.git )
+
+		$ git clone (your forked repository url)
+		$ cd hawkthorne-client-lua
+
+7. Build your maps ( this must be done each time you change a map )
+
+		$ make maps
+		
+
+8. Run the server
+
+		$ love src
+		
+	A blue error message screen indicates the address was found, but we failed to establish a connection.
+	Seeing the top of a map currently isn't an indication of the ability to connect.
+	
+	
+	If you are testing a specific port, you can optionally pass that port using the --port option
+
+		$ love src --port=12345
+
 
 Notes: 
 
