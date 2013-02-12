@@ -3,32 +3,35 @@
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
-
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
     <title>Multiplayer Hawkthorne by NimbusBP1729</title>
   </head>
 
   <body>
+    <div id="container">
+      <div class="inner">
 
-    <header>
-      <div class="container">
-        <h1>Multiplayer Hawkthorne</h1>
-        <h2></h2>
+        <header>
+          <h1>Multiplayer Hawkthorne</h1>
+          <h2></h2>
+        </header>
 
-        <section id="downloads">
-          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua/zipball/master" class="btn">Download as .zip</a>
-          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua/tarball/master" class="btn">Download as .tar.gz</a>
-          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/NimbusBP1729/hawkthorne-server-lua" id="view-on-github" class="button"><span>View on GitHub</span></a>
         </section>
-      </div>
-    </header>
 
-    <div class="container">
-      <section id="main_content">
-        <h1>Journey to the Center of Hawkthorne</h1>
+        <hr>
+
+        <section id="main_content">
+          <h1>Journey to the Center of Hawkthorne</h1>
 
 <p>This project is a derivative of Kyle Conroy's <a href="https://github.com/kyleconroy/hawkthorne-journey">Journey to the Center of Hawkthorne</a> project. Journey to the Center of Hawkthorne is a sidescrolling game based on community's Digital Estate Planning episode.</p>
 
@@ -46,31 +49,118 @@
 <p>README for people who want to test it out without looking at code
 <a href="https://dl.dropbox.com/u/13978314/hawkthorne/README.txt">https://dl.dropbox.com/u/13978314/hawkthorne/README.txt</a></p>
 
+<h1>Communication Interface for Multiplayer Client/Server</h1>
 
-<p>Related Links:
-  <ul>
-    <li>
-      <a href="udpMessages.html">Hawkthorne UDP messages</a>
-    </li>
-    <li>
-        <a href="packed.html">Hawkthorne Packed Node standard</a>
-    </li>
-  </ul>
-</p>
+<p>Note: the <code>entity</code> is an id assigned to the player when he tries to register. 
+<code>obj</code> and <code>plyr</code> sent through the UDP sockets are packed representations of an object and a player respectively.</p>
 
+<h2>Supported commands and when they should be sent:</h2>
 
-<p>External Links:
-  <ul>
-    <li>
-        Check which ports you can use.
-        <a href="https://www.grc.com/x/ne.dll?rh1dkyd2">GRC Port Scanner</a>
-    </li>
-  </ul>
-</p>
+<h3>Client to Server</h3>
 
-      </section>
+<p>when the client presses a button</p>
+
+<pre><code>(entity) keypressed (button)
+</code></pre>
+
+<p>when the client releases a button</p>
+
+<pre><code>(entity) keyreleased (button)    
+</code></pre>
+
+<p>when the client requests an update of level level_name Note: it is expected that the server responds with updatePlayer and updateObject</p>
+
+<pre><code> (entity) update (levelName)
+</code></pre>
+
+<p>when the client registers a character by the name of (name) with costume (costume)</p>
+
+<pre><code>(entity) register (name) (costume)
+</code></pre>
+
+<p>when the client switches to a character by the name of (name) with costume (costume)</p>
+
+<pre><code>(entity) changeCostume (name) (costume)
+</code></pre>
+
+<p>when the client decides to enter a specific level</p>
+
+<pre><code>(entity) enter (level)    
+</code></pre>
+
+<h3>Server to Client</h3>
+
+<p>when the server gets a request from an entity to update this is sent to a single client</p>
+
+<pre><code>(entity) updatePlayer (plyr)
+</code></pre>
+
+<p>when the server gets a request from an entity to update<br>
+this is sent to a single client</p>
+
+<pre><code>(entity) updateObject (obj)    
+</code></pre>
+
+<p>when the server notices a player switching between backend gamestates this is sent to all clients</p>
+
+<pre><code>(entity) stateSwitch (fromLevel) (toLevel)    
+</code></pre>
+
+<p>when the server wants to tell a client to make a sound this may or may not be sent to all clients</p>
+
+<pre><code>(entity) sound (soundFile)
+</code></pre>
+
+<h1>Packed Representation of Nodes</h1>
+
+<p>The UDP sockets we've implemented do not allow sending arbitrary tables. To that end, we needed to incorporate a straightforward mechanism as follows:</p>
+
+<p>We design these packed representations of nodes to contain only those attributes which the client needs to draw it.</p>
+
+<h2>Format</h2>
+
+<p>The string that represents the node is a sequence of parameters, each of which end with <code>?</code></p>
+
+<p>A parameter is a triplet separated by two <code>!</code> s</p>
+
+<p>The triplet is identified by TYPE,NAME, and VALUE</p>
+
+<h3>TYPE</h3>
+
+<p>TYPE is an element of the set {B,N,S}</p>
+
+<p><code>B</code> indicate the parameter is a boolean</p>
+
+<p><code>N</code> indicates the parameter is a number</p>
+
+<p><code>S</code> indicates the parameter is a string</p>
+
+<h3>NAME</h3>
+
+<p>NAME is the name of the parameter</p>
+
+<h3>VALUE</h3>
+
+<p>VALUE is the value of the parameter</p>
+
+<p>Example:</p>
+
+<pre><code>S!id!player1729?N!x!100?N!y!200?    
+</code></pre>
+
+<p>translates to</p>
+
+<pre><code>{id="player1729", x=100, y=200}
+</code></pre>
+        </section>
+
+        <footer>
+          Multiplayer Hawkthorne is maintained by <a href="https://github.com/NimbusBP1729">NimbusBP1729</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
     </div>
-
-    
   </body>
 </html>
