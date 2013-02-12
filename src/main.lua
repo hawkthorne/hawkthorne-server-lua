@@ -159,6 +159,7 @@ if correctVersion then
                     playerBundle.position = plyr.character:animation() and 
                                                      plyr.character:animation().position
                     playerBundle.direction = plyr.character.direction
+                    playerBundle.username = plyr.username
 
                 server:sendtoip(string.format("%s %s %s", i, 'updatePlayer', lube.bin:pack_node(playerBundle)), msg_or_ip,  port_or_nil)
                 end
@@ -177,7 +178,7 @@ if correctVersion then
             server.clients[entity].player.character.name=name
             server.clients[entity].player.character.costume=costume
        elseif cmd == 'register' then
-            local name,costume = parms:match("^(%S*) (.*)")
+            local name,costume,username = parms:match("^(%S*) (%S*) (.*)")
             server.clients[entity].player = Player.new()
             server.clients[entity].player.id = entity
             --todo:remove town dependence
@@ -185,6 +186,7 @@ if correctVersion then
             server.clients[entity].player.ip = msg_or_ip
             server.clients[entity].player.character.name=name
             server.clients[entity].player.character.costume=costume
+            server.clients[entity].player.username=username          
         elseif cmd == 'unregister' then
             server:unregister(parms)
 
