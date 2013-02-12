@@ -63,10 +63,10 @@ function PlayerAttack:collide(node, dt, mtv_x, mtv_y)
             -- level.nodes[attackSprite] = nil
         -- end)
         
-        if node.die then
-            node:die(self.damage)
-        elseif node.hurt then
+        if node.hurt then
             node:hurt(self.damage)
+        elseif node.die then
+            node:die(self.damage)
         end
         self:deactivate()
     end
