@@ -25,6 +25,8 @@ function Sprite.new(node, collider)
     setmetatable(sprite, Sprite)
 
     assert(p.sheet, "'sheet' required for sprite node")
+    
+    sprite.type = 'sprite'
 
     sprite.sheet = load_sprite(p.sheet)
     sprite.sheetPath = p.sheet

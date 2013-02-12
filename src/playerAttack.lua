@@ -45,8 +45,6 @@ function PlayerAttack:collide(node, dt, mtv_x, mtv_y)
     if not node then return end
     if self.dead then return end
 
-    --implement hug button action
-    if node.isPlayer then return end
 
     local tlx,tly,brx,bry = self.bb:bbox()
     local attackNode = { x = tlx, y = tly,
@@ -55,16 +53,21 @@ function PlayerAttack:collide(node, dt, mtv_x, mtv_y)
                             height = 20, width = 20,
                           }
                         }
-    if node.hurt then
+    if node.hurt or node.die then
         sound.playSfx("punch")
-        local attackSprite = Sprite.new(attackNode, collider)
-        attackSprite.id = require("level").generateObjectId()
-        local level = Gamestate.get(self.player.level)
-        level.nodes[attackSprite] = attackSprite
-        Timer.add(0.1,function ()
-            level.nodes[attackSprite] = nil
-        end)
-        node:hurt(self.damage)
+        -- local attackSprite = Sprite.new(attackNode, collider)
+        -- attackSprite.id = require("level").generateObjectId()
+        -- local level = Gamestate.get(self.player.level)
+        -- level.nodes[attackSprite] = attackSprite
+        -- Timer.add(0.1,function ()
+            -- level.nodes[attackSprite] = nil
+        -- end)
+        
+        if node.die then
+            node:die(self.damage)
+        elseif node.hurt then
+            node:hurt(self.damage)
+        end
         self:deactivate()
     end
 end

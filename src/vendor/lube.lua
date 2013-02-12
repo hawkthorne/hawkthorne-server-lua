@@ -63,8 +63,8 @@ function lube.bin:setseperators(null, one)
 	self.one = one
 end
 
-function lube.bin:unpack_node(s)
-    local t = {}
+function lube.bin:unpack_node(s,t)
+    assert(t,"input table must not be nil")
     local segments = s:split(lube.bin.null)
     for _,v in pairs(segments) do
         --id_index_value
@@ -255,7 +255,8 @@ dummyTable.velocity = {x=4,y=4}
 dummyString = lube.bin:pack_node(dummyTable)
 print(dummyString)
 print("===")
-copyTab = lube.bin:unpack_node(dummyString)
+copyTab = {}
+lube.bin:unpack_node(dummyString,copyTab)
 print(copyTab)
 
 lube.client = {}

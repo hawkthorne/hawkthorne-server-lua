@@ -70,8 +70,8 @@ return {
             right = {'loop', {'2-3,4'}, 0.16}
         },
         attack = {
-            left = {'once', {'2,6'}, 0.3},
-            right = {'once', {'2,5'}, 0.3}
+            right = {'loop', {'3-4,5'}, 0.16},
+            left = {'loop', {'3-4,6'}, 0.16}
         },
         attackjump = {
             left = {'loop', {'7-8,3'}, 0.16},

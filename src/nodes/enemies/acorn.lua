@@ -67,7 +67,8 @@ return {
             rage_velocity = 4
          end
      
-        if enemy.state == 'attack' then
+        if enemy.state == 'attack' and math.dist(player.position.x,player.position.y,
+                                            enemy.position.x,enemy.position.y) < 1000 then
             if enemy.position.x < player.position.x then
                 enemy.direction = 'right'
             elseif enemy.position.x + enemy.props.width > player.position.x + player.width then

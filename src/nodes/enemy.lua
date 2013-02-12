@@ -308,6 +308,7 @@ function Enemy:wall_pushback(node, new_x)
 end
 
 function Enemy:moveBoundingBox()
+    if not self.bb then return end
     self.bb:moveTo( self.position.x + ( self.props.width / 2 ) + self.bb_offset.x,
                     self.position.y + ( self.props.height / 2 ) + self.bb_offset.y )
 end

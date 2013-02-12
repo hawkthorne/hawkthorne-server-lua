@@ -5,7 +5,6 @@ local tmx = require 'vendor/tmx'
 local HC = require 'vendor/hardoncollider'
 local Timer = require 'vendor/timer'
 local Tween = require 'vendor/tween'
-local window = require 'window'
 local music = {}
 
 local node_cache = {}
@@ -57,6 +56,18 @@ local function on_collision(dt, shape_a, shape_b, mtv_x, mtv_y)
         node_a.players_touched = node_a.players_touched or {}
         node_b.players_touched[node_a] = true
         node_a.players_touched[node_b] = true
+        --suspicions confirmed, someone was using mtv_x incorrectly elsewhere
+        -- and the problem trickled down.
+        -- mtv_x and mtv_y should have different signs depending on the object order
+        -- as follows:
+        if node_a.collide then
+            node_a:collide(node_b, dt, mtv_x, mtv_y)
+        end
+        if node_b.collide then
+            node_b:collide(node_a, dt, -mtv_x, -mtv_y)
+        end
+    return
+
     elseif shape_a.player then
         node_a = shape_a.player
         node_b = shape_b.node
@@ -281,10 +292,6 @@ function Level:enter( previous, door , player)
         height = self.map.height * self.map.tileheight
     }
 
-    --setBackgroundColor(self.map)
-
-    --sound.playMusic( self.music )
-
    --if you entered through a doorway, then position yourself with it
    if door then
         player.position = {
@@ -343,17 +350,12 @@ function Level:update(dt)
     Tween.update(dt)
     for _,player in pairs(self.players) do
         player:update(dt)
-    end
-    --ach:update(dt)
- 
-    --TODO:remove the double nested loop
-    --seems disastrous
-    for _,node in pairs(self.nodes) do
-        for k,player in pairs(self.players) do
+        for _,node in pairs(self.nodes) do
             if node.update then node:update(dt, player) end
         end
     end
-
+    --ach:update(dt)
+ 
     self.collider:update(dt)
 
     self:updatePan(dt)
@@ -384,81 +386,12 @@ end
 
 
 function Level:draw()
-    self.background:draw(0, 0)
-
-    if self.player.footprint then
-        self:floorspaceNodeDraw()
-    else
-        for i,node in pairs(self.nodes) do
-            if node.draw and not node.foreground then node:draw() end
-        end
-
-        self.player:draw()
-
-        for i,node in pairs(self.nodes) do
-            if node.draw and node.foreground then node:draw() end
-        end
-    end
-    
-    self.player.inventory:draw(self.player.position)
-    --ach:draw()
 end
 
 -- draws the nodes based on their location in the y axis
 -- this is an accurate representation of the location
 -- written by NimbusBP1729, refactored by jhoff
 function Level:floorspaceNodeDraw()
-    local layers = {}
-    local player = self.player
-    local fp = player.footprint
-    local fp_base = math.floor( fp.y + fp.height )
-    local player_drawn = false
-    local player_center = player.position.x + player.width / 2
-
-    --iterate through the nodes and place them in layers by their lowest y value
-    for _,node in pairs(self.nodes) do
-        if node.draw then
-            local node_position = node.position and node.position or ( ( node.x and node.y ) and {x=node.x,y=node.y} or ( node.node and {x=node.node.x,y=node.node.y} or false ) )
-            assert( node_position, 'Error! Node has to have a position!' )
-            assert( node.height and node.width, 'Error! Node must have a height and a width property!' )
-            local node_center = node_position.x + ( node.width / 2 )
-            local node_depth = ( node.node and node.node.properties and node.node.properties.depth ) and node.node.properties.depth or 0
-            local node_direction = ( node.node and node.node.properties and node.node.properties.direction ) and node.node.properties.direction or false
-            -- base is, by default, offset by the depth
-            local node_base = node_position.y + node.height - node_depth
-            -- adjust the base by the players position
-            -- if on floor and not behind or in front
-            if fp.offset == 0 and node_direction and node_base < fp_base and node_position.y + node.height > fp_base then
-                node_base = fp_base - 3
-                if ( node_direction == 'left' and player_center < node_center ) or
-                   ( node_direction == 'right' and player_center > node_center ) then
-                    node_base = fp_base + 3
-                end
-            end
-            -- add the node to the layer
-            node_base = math.floor( node_base )
-            while #layers < node_base do table.insert( layers, false ) end
-            if not layers[ node_base ] then layers[ node_base ] = {} end
-            table.insert( layers[ node_base ], node )
-         end
-    end
-
-    --draw the layers
-    for y,nodes in pairs(layers) do
-        if nodes then
-            for _,node in pairs(nodes) do
-                --draw player once his neighbors are found
-                if not player_drawn and fp_base <= y then
-                    self.player:draw()
-                    player_drawn = true
-                end
-                node:draw()
-            end
-        end
-    end
-    if not player_drawn then
-        self.player:draw()
-    end
 end
 
 function Level:leave(player)

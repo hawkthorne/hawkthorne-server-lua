@@ -23,6 +23,9 @@ if correctVersion then
 
   local server = nil
   local levels = nil -- levels[level_name] = level
+  
+  local objectBundle = {}
+  local playerBundle = {}
 
   -- XXX Hack for level loading
   Gamestate.Level = Level
@@ -54,6 +57,7 @@ if correctVersion then
   end
 
   function love.update(dt)
+    print(dt)
     local dt = math.min(0.033333333, dt)
     for level_name,level in pairs(levels) do
         level:update(dt)
@@ -127,34 +131,34 @@ if correctVersion then
                         error("direction of type :"..node.direction.." is not understood")
                     end
                     
-                    local objectBundle  = {level = level,
-                      x = math.round(node.x or node.position.x) + (node.offset_x or 0),
-                      y = math.round(node.y or node.position.y) + (node.offset_y or 0),
-                      state = node.state,
-                      position = framePosition,
-                      direction = my_direction,
-                      id = node.id,
-                      name = name,
-                      type = type,
-                      width = node.width,
-                      height = node.height,
-                      spritePath = node.spritePath,
-                      sheetPath = node.sheetPath,
-                    }
+                    objectBundle.level = level
+                    objectBundle.x = math.round(node.x or node.position.x) + (node.offset_x or 0)
+                    objectBundle.y = math.round(node.y or node.position.y) + (node.offset_y or 0)
+                    objectBundle.state = node.state
+                    objectBundle.position = framePosition
+                    objectBundle.direction = my_direction
+                    objectBundle.id = node.id
+                    objectBundle.name = name
+                    objectBundle.type = type
+                    objectBundle.width = node.width
+                    objectBundle.height = node.height
+                    objectBundle.spritePath = node.spritePath
+                    objectBundle.sheetPath = node.sheetPath
                     server:sendtoip(string.format("%s %s %s", objectBundle.id, 'updateObject', lube.bin:pack_node(objectBundle)), msg_or_ip,  port_or_nil)
                 end
             end
             for i, client in pairs(server.clients) do
                     local plyr = client.player
-                    local playerBundle  = {id = plyr.id,
-                                          level = plyr.level,
-                                          x = plyr.position.x, y = plyr.position.y,
-                                          name = plyr.character.name,
-                                          costume = plyr.character.costume,
-                                          state = plyr.character.state,
-                                          position = plyr.character:animation() and 
-                                                     plyr.character:animation().position,
-                                          direction = plyr.character.direction}
+                    playerBundle.id = plyr.id
+                    playerBundle.level = plyr.level
+                    playerBundle.x = plyr.position.x
+                    playerBundle.y = plyr.position.y
+                    playerBundle.name = plyr.character.name
+                    playerBundle.costume = plyr.character.costume
+                    playerBundle.state = plyr.character.state
+                    playerBundle.position = plyr.character:animation() and 
+                                                     plyr.character:animation().position
+                    playerBundle.direction = plyr.character.direction
 
                 server:sendtoip(string.format("%s %s %s", i, 'updatePlayer', lube.bin:pack_node(playerBundle)), msg_or_ip,  port_or_nil)
                 end

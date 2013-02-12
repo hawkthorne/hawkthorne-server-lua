@@ -176,6 +176,24 @@ function Player:enter(level)
     self.current_hippie = nil
 end
 
+function Player:collide(player, dt, mtv_x, mtv_y)
+    if not player.isPlayer then return end
+    --Note:not exactly sure what I want, but try to conserve momentum
+    
+    --assert(player.isPlayer, "only player-player collisions are recognized")
+    local avg_velocity_x = (player.velocity.x+self.velocity.x)/2
+    local avg_velocity_y = (player.velocity.y+self.velocity.y)/2
+    self.velocity.x = avg_velocity_x
+    --self.velocity.y = avg_velocity_y
+    --self.velocity.y = -self.velocity.y
+    self.position.x = self.position.x + mtv_x
+    
+    self.position.y = self.position.y + mtv_y
+    if mtv_y > 0 then
+        player:floor_pushback(self, self.position.y)
+    end
+end
+
 ---
 -- Create or look up a new Player
 -- @param collider
