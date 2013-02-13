@@ -41,6 +41,7 @@ local Level = require 'level'
 
 local MovingPlatform = {}
 MovingPlatform.__index = MovingPlatform
+MovingPlatform.isMovingPlatform = true
 
 function MovingPlatform.new(node, collider)
     local mp = {}

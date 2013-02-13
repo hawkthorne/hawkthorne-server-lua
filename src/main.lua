@@ -26,6 +26,10 @@ if correctVersion then
   
   local objectBundle = {}
   local playerBundle = {}
+  
+  local kickTimer = 0
+  --amount of idle time a player is allowed to have
+  local KICK_OUT_TIME = 5
 
   -- XXX Hack for level loading
   Gamestate.Level = Level
@@ -57,10 +61,20 @@ if correctVersion then
   end
 
   function love.update(dt)
-    print(dt)
     local dt = math.min(0.033333333, dt)
     for level_name,level in pairs(levels) do
         level:update(dt)
+    end
+    
+    --every math.huge seconds, try to boot idle players
+    kickTimer = kickTimer + dt
+    if kickTimer > math.huge then
+        for id, client in pairs(server.clients) do
+            if client.lastUpdate + KICK_OUT_TIME < os.time() then
+                server:unregister(id)
+            end
+        end
+        kickTimer = 0
     end
     
     --
@@ -88,80 +102,125 @@ if correctVersion then
             player.key_down[button] = false
             if level then level:keyreleased( button, player) end
         elseif cmd == 'enter' then
-            local level = parms:match("^(%S*)")
-            levels[level] = levels[level] or Gamestate.load(level)
-            level = levels[level]
+            local levelName = parms:match("^(%S*)")
+            levels[levelName] = levels[levelName] or Gamestate.load(levelName)
+            local level = levels[levelName]
+            assert(level)
             local player = server.clients[entity].player
             level:enter(require("overworld"),"main",player)
-        elseif cmd == 'update' then
-            --sends an update back to the client
-            local level = parms:match("^(%S*)")
-            if level ~= '$' then
-            assert(level,"Must update a specific level")
-            levels[level] = levels[level] or Gamestate.load(level)
-            levels[level].nodes = levels[level].nodes or {}
-            --update objects for client(s)
-            --TODO: create appropriate index 'i' for node
-            for i, node in pairs(levels[level].nodes) do
+              for i, node in pairs(level.nodes) do
                     local type,name
  
                     --note: super_type was created because of inconsistent type use
                     type = node.super_type
                     name = node.name
 
-                if node.draw and (node.position or (node.x and node.y)) and type~="sprite" then
+                    if node.draw and (node.position or (node.x and node.y)) and type~="sprite" then
 
-                    local framePosition = 1
-                    if _G.type(node.animation)== "function" then
-                        framePosition = node:animation().position
-                    elseif node.animation then
-                        framePosition = node.animation.position
-                    end
+                        local framePosition = 1
+                        if _G.type(node.animation)== "function" then
+                            framePosition = node:animation().position
+                        elseif node.animation then
+                            framePosition = node.animation.position
+                        end
                    
-                    local my_direction
-                    if node.direction=="right" or node.direction=="left" then
-                        my_direction = node.direction
-                    elseif node.direction==1 then
-                        my_direction = "right"
-                    elseif node.direction==-1 then
-                        my_direction = "left"
-                    elseif not node.direction then
-                        my_direction = "right"
-                    else
-                        error("direction of type :"..node.direction.." is not understood")
-                    end
+                        local my_direction
+                        if node.direction=="right" or node.direction=="left" then
+                            my_direction = node.direction
+                        elseif node.direction==1 then
+                            my_direction = "right"
+                        elseif node.direction==-1 then
+                            my_direction = "left"
+                        elseif not node.direction then
+                            my_direction = "right"
+                        else
+                            error("direction of type :"..node.direction.." is not understood")
+                        end
                     
-                    objectBundle.level = level
-                    objectBundle.x = math.round(node.x or node.position.x) + (node.offset_x or 0)
-                    objectBundle.y = math.round(node.y or node.position.y) + (node.offset_y or 0)
-                    objectBundle.state = node.state
-                    objectBundle.position = framePosition
-                    objectBundle.direction = my_direction
-                    objectBundle.id = node.id
-                    objectBundle.name = name
-                    objectBundle.type = type
-                    objectBundle.width = node.width
-                    objectBundle.height = node.height
-                    objectBundle.spritePath = node.spritePath
-                    objectBundle.sheetPath = node.sheetPath
-                    server:sendtoip(string.format("%s %s %s", objectBundle.id, 'updateObject', lube.bin:pack_node(objectBundle)), msg_or_ip,  port_or_nil)
+                        objectBundle.level = levelName
+                        objectBundle.x = math.round(node.x or node.position.x) + (node.offset_x or 0)
+                        objectBundle.y = math.round(node.y or node.position.y) + (node.offset_y or 0)
+                        objectBundle.state = node.state
+                        objectBundle.position = framePosition
+                        objectBundle.direction = my_direction
+                        objectBundle.id = node.id
+                        objectBundle.name = name
+                        objectBundle.type = type
+                        objectBundle.width = node.width
+                        objectBundle.height = node.height
+                        objectBundle.spritePath = node.spritePath
+                        objectBundle.sheetPath = node.sheetPath
+                        server:sendtoip(string.format("%s %s %s", objectBundle.id, 'updateObject', lube.bin:pack_node(objectBundle)), msg_or_ip,  port_or_nil)
+                    end
                 end
-            end
-            for i, client in pairs(server.clients) do
-                    local plyr = client.player
-                    playerBundle.id = plyr.id
-                    playerBundle.level = plyr.level
-                    playerBundle.x = plyr.position.x
-                    playerBundle.y = plyr.position.y
-                    playerBundle.name = plyr.character.name
-                    playerBundle.costume = plyr.character.costume
-                    playerBundle.state = plyr.character.state
-                    playerBundle.position = plyr.character:animation() and 
-                                                     plyr.character:animation().position
-                    playerBundle.direction = plyr.character.direction
-                    playerBundle.username = plyr.username
+        elseif cmd == 'update' then
+            --sends an update back to the client
+            local player = server.clients[entity].player
+            local levelName = parms:match("^(%S*)")
+            if levelName ~= '$' then
+                assert(levelName,"Must update a specific level")
+                levels[levelName] = levels[levelName] or Gamestate.load(levelName)
+                levels[levelName].nodes = levels[levelName].nodes or {}
+                --update objects for client(s)
+                --TODO: create appropriate index 'i' for node
+                for i, node in pairs(levels[levelName].nodes) do
+                    local type,name
+ 
+                    --note: super_type was created because of inconsistent type use
+                    type = node.super_type
+                    name = node.name
 
-                server:sendtoip(string.format("%s %s %s", i, 'updatePlayer', lube.bin:pack_node(playerBundle)), msg_or_ip,  port_or_nil)
+                    --if node.draw and (node.position or (node.x and node.y)) and type~="sprite" then
+                    if node.isEnemy or node.isMovingPlatform then
+                        local framePosition = 1
+                        if _G.type(node.animation)== "function" then
+                            framePosition = node:animation().position
+                        elseif node.animation then
+                            framePosition = node.animation.position
+                        end
+                   
+                        local my_direction
+                        if node.direction=="right" or node.direction=="left" then
+                            my_direction = node.direction
+                        elseif node.direction==1 then
+                            my_direction = "right"
+                        elseif node.direction==-1 then
+                            my_direction = "left"
+                        elseif not node.direction then
+                            my_direction = "right"
+                        else
+                            error("direction of type :"..node.direction.." is not understood")
+                        end
+                    
+                        objectBundle.level = levelName
+                        objectBundle.x = math.round(node.x or node.position.x) + (node.offset_x or 0)
+                        objectBundle.y = math.round(node.y or node.position.y) + (node.offset_y or 0)
+                        objectBundle.state = node.state
+                        objectBundle.position = framePosition
+                        objectBundle.direction = my_direction
+                        objectBundle.id = node.id
+                        server:sendtoip(string.format("%s %s %s", objectBundle.id, 'updateObject', lube.bin:pack_node(objectBundle)), msg_or_ip,  port_or_nil)
+                    end
+                end
+                for i, client in pairs(server.clients) do
+                    local plyr = client.player
+                    if plyr then
+                        playerBundle.id = plyr.id
+                        playerBundle.level = plyr.level
+                        playerBundle.x = plyr.position.x
+                        playerBundle.y = plyr.position.y
+                        playerBundle.name = plyr.character.name
+                        playerBundle.costume = plyr.character.costume
+                        playerBundle.state = plyr.character.state
+                        playerBundle.position = plyr.character:animation() and 
+                                                        plyr.character:animation().position
+                        playerBundle.direction = plyr.character.direction
+                        playerBundle.username = plyr.username
+    
+                        server:sendtoip(string.format("%s %s %s", i, 'updatePlayer', lube.bin:pack_node(playerBundle)), msg_or_ip,  port_or_nil)
+                    else
+                        print("you may be receiving messages from an unautorized player")
+                    end
                 end
             end
             --update players for client(s)
@@ -171,8 +230,6 @@ if correctVersion then
             for _,msg in pairs(Messages.getMessages(entity)) do
                 server:sendtoip(msg, msg_or_ip,  port_or_nil)
             end
-            
-            
        elseif cmd == 'changeCostume' then
             local name,costume = parms:match("^(%S*) (.*)")
             server.clients[entity].player.character.name=name
@@ -197,6 +254,7 @@ if correctVersion then
             print("unrecognized command:'"..(cmd or 'nil').."'")
         end
     elseif msg_or_ip == 'closed' then
+        print("close message received")
         --ignoring
         --TODO: deal with close correctly
     elseif msg_or_ip ~= 'timeout' then
