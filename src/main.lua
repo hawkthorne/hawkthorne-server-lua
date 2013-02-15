@@ -44,12 +44,17 @@ if correctVersion then
     
     table.remove(arg, 1)
     cli:add_option("-p, --port=NAME", "The port to use")
+    cli:add_option("-d, --debugger", "Enable debugger")
     cli:add_option("--console", "Displays print info")
 
     local args = cli:parse(arg)
     if args["port"] ~= "" then
       local port = args["port"]
       Server.singleton = Server.new(port)
+    end
+    if args["d"] ~= "" then
+      local port = args["d"]
+      Server.DEBUG = true
     end
     server = Server.getSingleton()
     levels = server.levels  -- levels[level_name] = level
