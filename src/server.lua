@@ -29,7 +29,7 @@ function Server.new(port)
 
     
     server.udp = socket.udp()
-    server.udp:settimeout(0)
+    server.udp:settimeout(0.0333)
     server.port = port or 12346
     server.udp:setsockname('*', server.port)
     lube.bin:setseperators("?","!")
