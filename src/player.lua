@@ -100,6 +100,8 @@ function Player.new(collider)
     plyr.key_down = {}
     plyr.character = character.new()
     plyr.character:reset()
+	--should be multiplied by all magic numbers used for jumping
+	plyr.jumpFactor = 1.05
     return plyr
 end
 
@@ -416,21 +418,21 @@ function Player:update( dt )
         and not self.rebounding and not self.liquid_drag then
         self.jumping = true
         if cheat.jump_high then
-            self.velocity.y = -970
+            self.velocity.y = -970*self.jumpFactor
         else
-            self.velocity.y = -670
+            self.velocity.y = -670*self.jumpFactor
         end
         sound.playSfx("jump")
     elseif jumped and not self.jumping and self:solid_ground()
         and not self.rebounding and self.liquid_drag then
      -- Jumping through heavy liquid:
         self.jumping = true
-        self.velocity.y = -270
+        self.velocity.y = -270*self.jumpFactor
         sound.playSfx("jump")
     end
 
-    if halfjumped and self.velocity.y < -450 and not self.rebounding and self.jumping then
-        self.velocity.y = -450
+    if halfjumped and self.velocity.y < -450*self.jumpFactor and not self.rebounding and self.jumping then
+        self.velocity.y = -450*self.jumpFactor
     end
     
     if not self.footprint or self.jumping then
