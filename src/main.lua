@@ -75,7 +75,7 @@ if correctVersion then
     kickTimer = kickTimer + dt
     if kickTimer > math.huge then
         for id, client in pairs(server.clients) do
-            if client.lastUpdate + KICK_OUT_TIME < os.time() then
+            if client.lastUpdate + KICK_OUT_TIME < socket.gettime() then
                 server:unregister(id)
             end
         end
@@ -88,11 +88,14 @@ if correctVersion then
     -- functions to prevent it, indeed. send/receive are just convenience
     -- functions, sendto/receive from are the real workers.]
     local data, msg_or_ip, port_or_nil = server:receivefrom()
+
     if data then
-        io.flush()
         -- more of these funky match patterns!
         local entity, cmd, parms = data:match("^(%S*) (%S*) (.*)")
-        if cmd == 'keypressed' then
+        local player = server.clients[entity].player
+        if player==nil and cmd~='register' then
+             server.log_file:write("ERROR: unauthorized player:",entity)
+        elseif cmd == 'keypressed' then
             local button = parms:match("^(%S*)")
             local player = server.clients[entity].player
             local level = player.level
@@ -142,6 +145,7 @@ if correctVersion then
                             error("direction of type :"..node.direction.." is not understood")
                         end
                     
+                        --Note: objectBundle was made local to this file to decrease the need for automatic memory deallocation
                         objectBundle.level = levelName
                         objectBundle.x = math.round(node.x or node.position.x) + (node.offset_x or 0)
                         objectBundle.y = math.round(node.y or node.position.y) + (node.offset_y or 0)
