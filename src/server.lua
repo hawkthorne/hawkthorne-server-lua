@@ -60,6 +60,7 @@ end
 function Server:receivefrom()
     local data, msg_or_ip, port_or_nil = self.udp:receivefrom()
     local entity = data and data:match("^(%S*) (.*)")
+    local now
     if msg_or_ip and msg_or_ip ~= 'timeout' and entity then 
         self.clients[entity] = self.clients[entity] or {}
         self.clients[entity].ip = msg_or_ip
@@ -69,6 +70,8 @@ function Server:receivefrom()
     if data then
         self.log_file:write("FROM CLIENT: "..(data or "<nil>").."\n")
         self.log_file:write("           : "..msg_or_ip..","..port_or_nil.."\n")
+        now=socket.gettime()
+        self.log_file:write(string.format('       Time: %s,%3d',os.date("%X",now),select(2,math.modf(now))*1000).."\n")
         --TODO: call less frequently
         --self.log_file:flush()
     end
@@ -89,6 +92,8 @@ function Server:sendtoip(message,ip,port)
         self.udp:sendto(message,ip,port)
         self.log_file:write("TO CLIENT: '"..(message or "<nil>").."'\n")
         self.log_file:write("         : "..ip..","..port.."\n")
+        now=socket.gettime()
+        self.log_file:write(string.format('     Time: %s,%3d',os.date("%X",now),select(2,math.modf(now))*1000).."\n")
         --TODO: call less frequently
         --self.log_file:flush()
     else

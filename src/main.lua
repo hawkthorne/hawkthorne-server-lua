@@ -53,7 +53,6 @@ if correctVersion then
       Server.singleton = Server.new(port)
     end
     if args["d"] ~= "" then
-      local port = args["d"]
       Server.DEBUG = true
     end
     server = Server.getSingleton()
