@@ -95,16 +95,17 @@ if correctVersion then
         if player==nil and cmd~='register' then
              server.log_file:write("ERROR: unauthorized player:",entity)
         elseif cmd == 'keys' then
-            local keys = parms:match("^(%S*)")
+            local keys = parms
             local player = server.clients[entity].player
             local level = player.level
             level = Gamestate.get(level)
             local keyTable = split(keys," ")
             for k,v in pairs(keyTable) do
                 local keyValPair = split(v,":")
-                player.key_down[keyValPair[1]]=keyValPair[2]==1 and true or false
+                local isKeyPressed = keyValPair[2]=="1"
+                player.key_down[keyValPair[1]]= isKeyPressed
                 if level then
-                    if keyValPair[2] then 
+                    if isKeyPressed then 
                         level:keypressed( keyValPair[1], player)
                     else
                         level:keyreleased( keyValPair[1], player)
