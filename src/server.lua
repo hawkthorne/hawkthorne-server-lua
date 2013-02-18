@@ -4,7 +4,7 @@ local Messages = require "messages"
 local Server = {}
 Server.__index = Server
 Server.singleton = nil
-Server.DEBUG = false
+Server.DEBUG = true
 
 local function __NULL__() end
 
