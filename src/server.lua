@@ -33,7 +33,7 @@ function Server.new(port)
     server.port = port or 12346
     server.udp:setsockname('*', server.port)
     lube.bin:setseperators("?","!")
-		print("Server started on port " .. server.port .. "!")
+    print("Server started on port " .. server.port .. "!")
     return server
 end
 
