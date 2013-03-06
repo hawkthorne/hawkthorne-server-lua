@@ -416,7 +416,7 @@ end
 function Level:keypressed( button , player)
     --require("mobdebug").start()
     --i don't know why it makes sense for us to be still to interact...
-    if button == 'INTERACT' and not player:isIdleState(self.player.character.state) then
+    if button == 'INTERACT' and not player:isIdleState(player.character.state) then
         return
     end
 
