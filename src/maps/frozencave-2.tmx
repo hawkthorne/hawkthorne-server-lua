@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="25" height="14" tilewidth="24" tileheight="24">
  <properties>
+  <property name="respawn" value="frozencave-2"/>
   <property name="soundtrack" value="winter2"/>
   <property name="title" value="Frozen Cave 2"/>
  </properties>
@@ -127,12 +128,14 @@
   <object name="main" type="door" x="384" y="72" width="24" height="48">
    <properties>
     <property name="level" value="frozencave"/>
+    <property name="sound" value="false"/>
     <property name="to" value="next"/>
    </properties>
   </object>
   <object name="next" type="door" x="456" y="240" width="24" height="48">
    <properties>
     <property name="level" value="frozencave-3"/>
+    <property name="sound" value="false"/>
     <property name="to" value="main"/>
    </properties>
   </object>
@@ -156,7 +159,7 @@
   <object name="bone" type="material" x="312" y="240" width="24" height="24"/>
   <object name="crystal" type="material" x="144" y="168" width="24" height="24"/>
  </objectgroup>
- <objectgroup color="#91a44a" name="wall" width="25" height="14">
+ <objectgroup color="#91a44a" name="block" width="25" height="14">
   <object x="312" y="144" width="192" height="24"/>
   <object x="336" y="120" width="168" height="24"/>
   <object x="504" y="0" width="72" height="336"/>

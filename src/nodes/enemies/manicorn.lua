@@ -14,7 +14,7 @@ return {
     bb_height = 48,
     bb_width = 24,
     damage = 1,
-    hp = 10,
+    hp = 6,
     tokens = 10,
     hand_x = 0,
     hand_y = 6,
@@ -98,6 +98,7 @@ return {
     end,
     update = function( dt, enemy, player, level )
         if enemy.state == 'dying' then return end
+        enemy.jumpkill = (enemy.state == 'attackrainbow_charging')
 
         if enemy.state == 'default' and math.abs(player.position.y-enemy.position.y) < 100
              and math.abs(player.position.x-enemy.position.x) < 300 then
@@ -114,6 +115,7 @@ return {
         local too_close = false
         if enemy.state == 'attack' or string.find(enemy.state,'attackrainbow') then
             if enemy.state == 'attackrainbow_start' then
+                enemy.direction = enemy.position.x < player.position.x and 'right' or 'left'
                 if enemy.currently_held then
                     enemy.state = 'attackrainbow_charging'
                     enemy.currently_held:launch(enemy)
@@ -123,7 +125,7 @@ return {
                 end
             end
         
-            if math.abs(enemy.position.x - player.position.x)<offset then
+            if math.abs(enemy.position.x - player.position.x)<offset or enemy.state == 'attackrainbow_charging'then
                 too_close = true
             elseif enemy.position.x < player.position.x then
                 enemy.direction = 'right'

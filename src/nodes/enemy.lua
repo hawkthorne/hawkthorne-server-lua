@@ -9,6 +9,7 @@
 --    animation frames, movement function and additional properties.
 ------------------------------
 
+local gamestate = require 'vendor/gamestate'
 local anim8 = require 'vendor/anim8'
 local Timer = require 'vendor/timer'
 local cheat = require 'cheat'
@@ -16,7 +17,6 @@ local sound = require 'vendor/TEsound'
 local token = require 'nodes/token'
 local game = require 'game'
 local Level = require 'level'
---local ach = (require 'achievements').new()
 
 local Enemy = {}
 Enemy.__index = Enemy
@@ -28,7 +28,7 @@ function Enemy.new(node, collider, enemytype)
     enemy.minimum_x = -math.huge -- -3000
     enemy.minimum_y = -math.huge -- -3000
     enemy.maximum_x = math.huge -- 30000
-    enemy.maximum_y = math.huge -- 3000
+    enemy.maximum_y = math.huge -- 2000
     
     local type = node.properties.enemytype or enemytype
     
@@ -61,7 +61,13 @@ function Enemy.new(node, collider, enemytype)
     }
     enemy.height = enemy.props.height
     enemy.width = enemy.props.width
-    enemy.velocity = enemy.props.velocity or {x=0,y=0}
+    --enemy.velocity = enemy.props.velocity or {x=0,y=0}
+    enemy.velocity = {
+        x = node.velocityX or (node.velocity and node.velocity.x) or 0,
+        y = node.velocityY or (node.velocity and node.velocity.y) or 0
+    }
+    
+    enemy.last_jump = 0
     
     enemy.jumpkill = enemy.props.jumpkill
     if enemy.jumpkill == nil then enemy.jumpkill = true end
@@ -118,8 +124,10 @@ function Enemy:hurt( damage )
             self:die()
         end)
         if self.reviveTimer then Timer.cancel( self.reviveTimer ) end
-        --ach:achieve( self.type .. ' killed by player' )
         self:dropTokens()
+        if self.currently_held then
+            self.currently_held:die()
+        end
     else
         self.reviveTimer = Timer.add( self.revivedelay, function() self.state = 'default' end )
         if self.props.hurt then self.props.hurt( self ) end
@@ -165,6 +173,7 @@ function Enemy:collide(node, dt, mtv_x, mtv_y)
 	if not node.isPlayer then return end
     local player = node
     if player.rebounding or player.dead then
+        player.current_enemy = nil
         return
     end
     
@@ -181,16 +190,11 @@ function Enemy:collide(node, dt, mtv_x, mtv_y)
     if playerBottom >= enemyTop and (playerBottom - enemyTop) < headsize
         and player.velocity.y > self.velocity.y and self.jumpkill then
         -- successful attack
-        self:hurt(1)
-        if cheat.jump_high then
-            player.velocity.y = -670
-        else
-            player.velocity.y = -450
-        end
-        return
+        self:hurt(player.jumpDamage)
+        player.velocity.y = -450 * player.jumpFactor
     end
 
-    if cheat.god then
+    if cheat:is('god') then
         self:hurt(self.hp)
         return
     end
@@ -227,11 +231,13 @@ function Enemy:collide_end( node )
 end
 
 function Enemy:update( dt, player )
+    local level = self.containerLevel
+    if level.scene then return end
+    
     if(self.position.x < self.minimum_x or self.position.x > self.maximum_x or
-       self.position.y < self.minimum_y or self.position.x > self.maximum_y) then
+       self.position.y < self.minimum_y or self.position.y > self.maximum_y) then
         self:die()
     end
-       
     
     for _,c in pairs(self.tokens) do
         c:update(dt)
@@ -260,9 +266,9 @@ function Enemy:update( dt, player )
             self.velocity.y = game.max_y
         end
     
-        self.position.x = self.position.x - (self.velocity.x * dt)
-        self.position.y = self.position.y + (self.velocity.y * dt)
     end
+    self.position.x = self.position.x - (self.velocity.x * dt)
+    self.position.y = self.position.y + (self.velocity.y * dt)
     
     self:moveBoundingBox()
 end

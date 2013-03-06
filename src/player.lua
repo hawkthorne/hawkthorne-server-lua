@@ -16,7 +16,6 @@ healthbar:setFilter('nearest', 'nearest')
 local Server = require 'server'
 local server = Server.getSingleton()
 local Inventory = require('inventory')
---local ach = (require 'achievements').new()
 
 local healthbarq = {}
 
@@ -30,7 +29,11 @@ local health = love.graphics.newImage('images/damage.png')
 local Player = {}
 Player.__index = Player
 Player.isPlayer = true
+
 Player.startingMoney = 0
+
+Player.jumpFactor = 1
+Player.speedFactor = 1
 
 -- single 'character' object that handles all character switching, costumes and animation
 Player.character = character
@@ -67,6 +70,8 @@ function Player.new(collider)
     plyr.healthVel = {x=0, y=0}
     plyr.max_health = 6
     plyr.health = plyr.max_health
+    
+    plyr.jumpDamage = 4
 
     plyr.inventory = Inventory.new( plyr )
     
@@ -241,18 +246,26 @@ function Player:moveBoundingBox()
                    self.position.y + (self.height / 2) + 2)
 end
 
+
+-- Set the current weapon. If weapon is nil then weapon is 
+-- set to default attack
+-- @return nil
+function Player:useWeapon(weapon)
+    if self.currently_held then
+        self.currently_held:unuse()
+    end
+
+    if weapon then
+        weapon:use(self)
+    end
+end
+
+
 -- Switches weapons. if there's nothing to switch to
 -- this switches to default attack
 -- @return nil
 function Player:switchWeapon()
-    local newWeapon = self.inventory:tryNextWeapon()
-    local oldWeapon = self.currently_held
-    oldWeapon:unuse()
-    
-    if newWeapon then
-        newWeapon:use(self)
-        self:setSpriteStates('wielding')
-    end
+    self:useWeapon(self.inventory:tryNextWeapon())
 end
 
 function Player:keypressed( button, map )
@@ -341,7 +354,9 @@ function Player:update( dt )
     local gazing = self.key_down[ 'UP' ]
     local movingLeft = self.key_down[ 'LEFT' ]
     local movingRight = self.key_down[ 'RIGHT' ]
-
+    if crouching or gazing or movingLeft or movingRight then
+      --require("mobdebug").start()
+    end
 
     if not self.invulnerable then
         self:stopBlink()
@@ -355,11 +370,6 @@ function Player:update( dt )
             self.currently_held:unuse()
         end
         self:moveBoundingBox()
-        return
-    end
-
-    if self.character.warpin then
-        self.character:warpUpdate(dt)
         return
     end
 
@@ -380,10 +390,10 @@ function Player:update( dt )
             end
         elseif self.velocity.x > 0 then
             self.velocity.x = self.velocity.x - (self:deccel() * dt)
-        elseif self.velocity.x > -game.max_x then
+        elseif self.velocity.x > -game.max_x*self.speedFactor then
             self.velocity.x = self.velocity.x - (self:accel() * dt)
-            if self.velocity.x < -game.max_x then
-                self.velocity.x = -game.max_x
+            if self.velocity.x < -game.max_x*self.speedFactor then
+                self.velocity.x = -game.max_x*self.speedFactor
             end
         end
 
@@ -396,10 +406,10 @@ function Player:update( dt )
             end
         elseif self.velocity.x < 0 then
             self.velocity.x = self.velocity.x + (self:deccel() * dt)
-        elseif self.velocity.x < game.max_x then
+        elseif self.velocity.x < game.max_x*self.speedFactor then
             self.velocity.x = self.velocity.x + (self:accel() * dt)
-            if self.velocity.x > game.max_x then
-                self.velocity.x = game.max_x
+            if self.velocity.x > game.max_x*self.speedFactor then
+                self.velocity.x = game.max_x*self.speedFactor
             end
         end
 
@@ -417,12 +427,8 @@ function Player:update( dt )
     if jumped and not self.jumping and self:solid_ground()
         and not self.rebounding and not self.liquid_drag then
         self.jumping = true
-        if cheat.jump_high then
-            self.velocity.y = -970*self.jumpFactor
-        else
-            self.velocity.y = -670*self.jumpFactor
-        end
-        sound.playSfx("jump")
+        self.velocity.y = -670 *self.jumpFactor
+        sound.playSfx( "jump" )
     elseif jumped and not self.jumping and self:solid_ground()
         and not self.rebounding and self.liquid_drag then
      -- Jumping through heavy liquid:
@@ -436,7 +442,7 @@ function Player:update( dt )
     end
     
     if not self.footprint or self.jumping then
-        self.velocity.y = self.velocity.y + game.gravity * dt
+        self.velocity.y = self.velocity.y + ((game.gravity * dt) / 2)
     end
     self.since_solid_ground = self.since_solid_ground + dt
 
@@ -448,6 +454,10 @@ function Player:update( dt )
     
     self.position.x = self.position.x + self.velocity.x * dt
     self.position.y = self.position.y + self.velocity.y * dt
+
+    if not self.footprint or self.jumping then
+        self.velocity.y = self.velocity.y + ((game.gravity * dt) / 2)
+    end
 
     -- These calculations shouldn't need to be offset, investigate
     -- Min and max for the level
@@ -526,7 +536,7 @@ end
 -- @param damage The amount of damage to deal to the player
 --
 function Player:die(damage)
-    if self.invulnerable or cheat.god then
+    if self.invulnerable or cheat:is('god') then
         return
     end
     if damage == nil then
@@ -541,7 +551,6 @@ function Player:die(damage)
     sound.playSfx("damage_"..math.max(self.health, 0) )
     self.rebounding = true
     self.invulnerable = true
-    --ach:achieve('damage', damage)
 
     if damage ~= nil then
         self.healthText.x = self.position.x + self.width / 2
@@ -584,6 +593,7 @@ function Player:die(damage)
     Timer.add(1.5, function() 
         self.invulnerable = false
         self.flash = false
+        self.rebounding = false
     end)
 
     self:startBlink()
@@ -758,7 +768,6 @@ function Player:getSpriteStates()
     }
 end
 
-
 function Player:isJumpState(myState)
     --assert(type(myState) == "string")
     if myState==nil then return nil end
@@ -854,14 +863,15 @@ end
 -- The player attacks
 -- @return nil
 function Player:attack()
+    if self.prevAttackPressed or self.dead then return end 
+
     local currentWeapon = self.inventory:currentWeapon()
     --take out a weapon
-    if self.prevAttackPressed then return end 
     
     if self.currently_held and self.currently_held.wield then
         self.prevAttackPressed = true
         self.currently_held:wield()
-        Timer.add(1.0, function()
+        Timer.add(0.37, function()
             self.wielding=false
             if self.currently_held then
                 self.currently_held.wielding=false
@@ -881,11 +891,11 @@ function Player:attack()
         self.attack_box:activate()
         self.prevAttackPressed = true
         self:setSpriteStates('attacking')
-        Timer.add(0.5, function()
+        Timer.add(0.1, function()
             self.attack_box:deactivate()
             self:setSpriteStates(self.previous_state_set)
         end)
-        Timer.add(1.1, function()
+        Timer.add(0.2, function()
             self.prevAttackPressed = false
         end)
     end

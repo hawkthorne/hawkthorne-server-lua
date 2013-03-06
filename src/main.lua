@@ -7,10 +7,15 @@ if correctVersion then
 
   local debugger = require 'debugger'
   local Gamestate = require 'vendor/gamestate'
+  local sound = require 'vendor/TEsound'
+  local timer = require 'vendor/timer'
+  local cli = require 'vendor/cliargs'
+  local mixpanel = require 'vendor/mixpanel'
+
+  local debugger = require 'debugger'
   local Level = require 'level'
   local camera = require 'camera'
   local fonts = require 'fonts'
-  local sound = require 'vendor/TEsound'
   local window = require 'window'
   local cli = require 'vendor/cliargs'
   local mixpanel = require 'vendor/mixpanel'
@@ -35,6 +40,9 @@ if correctVersion then
   Gamestate.Level = Level
   local data, msg_or_ip, port_or_nil
   local entity, cmd, parms
+  
+  math.randomseed( os.time() )
+
   -- Get the current version of the game
   local function getVersion()
     return split(love.graphics.getCaption(), "v")[2]
@@ -45,7 +53,6 @@ if correctVersion then
     table.remove(arg, 1)
     cli:add_option("-p, --port=NAME", "The port to use")
     cli:add_option("-d, --debugger", "Enable debugger")
-    cli:add_option("--console", "Displays print info")
 
     local args = cli:parse(arg)
     if args["port"] ~= "" then
@@ -96,6 +103,7 @@ if correctVersion then
         if player==nil and cmd~='register' then
              server.log_file:write("ERROR: unauthorized player:",entity)
         elseif cmd == 'keypressed' then
+            --require("mobdebug").start()
             local button = parms:match("^(%S*)")
             local player = server.clients[entity].player
             local level = player.level

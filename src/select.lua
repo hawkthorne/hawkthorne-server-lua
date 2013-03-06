@@ -39,6 +39,7 @@ character_selections[3][1][0] = characters['ian']
 character_selections[3][1][1] = characters['rich']
 character_selections[3][1][2] = characters['vicki']
 character_selections[3][0][0] = characters['vaughn']
+character_selections[3][0][1] = characters['kevin']
 
 
 local current_page = 1
@@ -100,9 +101,9 @@ function state:keypressed( button )
         else
             local c = self:character()
             if c then
-                c.count = (c.count - 1)
-                if c.count == 0 then
-                    c.count = (# c.costumes)
+                c.count = (c.count + 1)
+                if c.count == (#c.costumes + 1) then
+                    c.count = 1
                 end
                 c.costume = c.costumes[c.count].sheet
                 sound.playSfx('click')

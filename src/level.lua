@@ -11,13 +11,10 @@ local node_cache = {}
 local tile_cache = {}
 
 local Player = require 'player'
-local Floor = require 'nodes/floor'
 local Floorspace = require 'nodes/floorspace'
 local Floorspaces = require 'floorspaces'
 local Platform = require 'nodes/platform'
-local Wall = require 'nodes/wall'
-
---local ach = (require 'achievements').new()
+local Block = require 'nodes/block'
 
 local function limit( x, min, max )
     return math.min(math.max(x,min),max)
@@ -31,16 +28,6 @@ local function load_tileset(name)
     local tileset = tmx.load(require("maps/" .. name))
     tile_cache[name] = tileset
     return tileset
-end
-
-local function load_node(name)
-    if node_cache[name] then
-        return node_cache[name]
-    end
-
-    local node = require('nodes/' .. name)
-    node_cache[name] = node
-    return node
 end
 
 local function on_collision(dt, shape_a, shape_b, mtv_x, mtv_y)
@@ -167,6 +154,17 @@ function Level.generateObjectId()
     return Level.objectCount
 end
 
+
+function Level.load_node(name)
+    if node_cache[name] then
+        return node_cache[name]
+    end
+
+    local node = require('nodes/' .. name)
+    node_cache[name] = node
+    return node
+end
+
 function Level.new(name)
     local level = {}
     setmetatable(level, Level)
@@ -183,12 +181,13 @@ function Level.new(name)
     )
 
     level.map = require("maps/" .. name)
-    level.background = load_tileset(name)
+    level.tileset = load_tileset(name)
     level.collider = HC(100, on_collision, collision_stop)
     level.offset = getCameraOffset(level.map)
     level.music = getSoundtrack(level.map)
     level.spawn = (level.map.properties and level.map.properties.respawn) or 'hallway'
     level.title = getTitle(level.map)
+    level.environment = {r=255, g=255, b=255, a=255}
  
     level:panInit()
 
@@ -203,7 +202,7 @@ function Level.new(name)
     level.doors = {}
 
     for k,v in pairs(level.map.objectgroups.nodes.objects) do
-        NodeClass = load_node(v.type)
+        NodeClass = Level.load_node(v.type)
         local node
         if NodeClass then
             v.objectlayer = 'nodes'
@@ -221,6 +220,7 @@ function Level.new(name)
             node.id = Level.generateObjectId()
             level.nodes[node] = node
         end
+
         if v.type == 'door' then
             if v.name then
                 if v.name == 'main' then
@@ -232,13 +232,6 @@ function Level.new(name)
         end
     end
     assert(level.default_position,"Level "..name.." has no 'main' door")
-
-    if level.map.objectgroups.floor then
-        for k,v in pairs(level.map.objectgroups.floor.objects) do
-            v.objectlayer = 'floor'
-            Floor.new(v, level.collider)
-        end
-    end
 
     if level.map.objectgroups.floorspace then
         level.floorspace = true
@@ -259,9 +252,10 @@ function Level.new(name)
         end
     end
 
-    if level.map.objectgroups.wall then
-        for k,v in pairs(level.map.objectgroups.wall.objects) do
-            Wall.new(v, level.collider)
+    if level.map.objectgroups.block then
+        for k,v in pairs(level.map.objectgroups.block.objects) do
+            v.objectlayer = 'block'
+            Block.new(v, level.collider)
         end
     end
 
@@ -276,7 +270,8 @@ end
 
 
 function Level:enter( previous, door , player)
-    --ach:achieve('enter ' .. self.name)
+    --makes sure it doesn't use a position
+    assert(player == nil or player.isPlayer)
     self.players[player.id] = player
     --only restart if it's an ordinary level
     if previous.level or previous==Gamestate.get('overworld') then
@@ -305,6 +300,14 @@ function Level:enter( previous, door , player)
             self.doors[ door ].node:show()
             player.freeze = false
         end
+    end
+    
+    if position then
+        local p = split(position, ",")
+        self.player.position = {
+            x = p[1] * self.map.tilewidth,
+            y = p[2] * self.map.tileheight
+        }
     end
 
     --this seems borderline disastrous
@@ -360,11 +363,6 @@ function Level:update(dt)
 
     self:updatePan(dt)
 
-    Timer.update(dt)
-    --apply accumulated changes that can't be that can't be executed mid-update
-    --TODO:reimplement processActionQueue
-    --self:processActionQueue()
-
     local exited, levelName, doorName = self.events:poll('exit')
     if exited then
       leaveLevel(self, levelName, doorName)
@@ -384,7 +382,6 @@ end
 function Level:exit(levelName, doorName)
 end
 
-
 function Level:draw()
 end
 
@@ -402,6 +399,7 @@ function Level:leave(player)
     player.attack_box.bb = nil
     --assert(nil,"Need to associate a player with leaving")
     --ach:achieve('leave ' .. self.name)
+    --most of these seem unnecessary
     for i,node in pairs(self.nodes) do
         if node.leave then node:leave() end
         if node.collide_end then
@@ -416,8 +414,9 @@ function Level:keyreleased( button , player)
 end
 
 function Level:keypressed( button , player)
-    
-    if button == 'INTERACT' and player.character.state ~= 'idle' then
+    --require("mobdebug").start()
+    --i don't know why it makes sense for us to be still to interact...
+    if button == 'INTERACT' and not player:isIdleState(self.player.character.state) then
         return
     end
 
@@ -446,6 +445,7 @@ end
 --this should move the camera on the client-side
 function Level:updatePan(dt)
     for _,player in pairs(self.players) do
+        if player.isClimbing then return end
         player.pan = player.pan or 0
         player.pan_hold_up = player.pan_hold_up or 0
         player.pan_hold_down = player.pan_hold_down or 0

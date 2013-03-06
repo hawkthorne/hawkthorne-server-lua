@@ -11,8 +11,6 @@ local sound = require 'vendor/TEsound'
 local cardutils = require 'cardutils'
 
 function state:init()
-    math.randomseed( os.time() )
-    
     self.table = love.graphics.newImage( 'images/cards/card_table_poker.png' )
 
     self.cardSprite = love.graphics.newImage('images/cards/cards.png' )
@@ -183,7 +181,6 @@ function state:no_menu()
 end
 
 function state:update(dt)
-    timer.update(dt)
     if self.prompt then self.prompt:update(dt) end
     self.cards_moving = self:update_cards(dt)
 end

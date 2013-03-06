@@ -10,6 +10,7 @@ episode. It's built using the [LÖVE](https://love2d.org/) game engine. Please
 [singleplayerissues]: https://github.com/kyleconroy/hawkthorne-journey/issues?state=open
 [multiplayerissues]: https://github.com/NimbusBP1729/hawkthorne-journey/issues?state=open
 
+<<<<<<< HEAD
 ## Downloads ( play the game )
  
 If you already have love installed, you can download the
@@ -25,10 +26,20 @@ Everyone gets to play!
 [libgdxclient]: https://dl.dropbox.com/u/13978314/hawkthorne/javaClient.zip
 
 ## Development ( contribute to the game )
+=======
+## Download the game
+
+- [OS X](http://files.projecthawkthorne.com/releases/latest/hawkthorne-osx.zip)
+- [Windows 32-bit](http://files.projecthawkthorne.com/releases/latest/hawkthorne-win-x86.zip)
+- [Windows 64-bit](http://files.projecthawkthorne.com/releases/latest/hawkthorne-win-x64.zip)
+
+## Contribute to the game
+>>>>>>> upstream/master
 
 All discussion and development takes place on
 [/r/hawkthorne](http://www.reddit.com/r/hawkthorne). If you have any
 contributions you'd like to submit, either open a pull request or create a post
+<<<<<<< HEAD
 on the subreddit.
 
 ### Getting your build up and running
@@ -129,22 +140,40 @@ alternate version [here](https://dl.dropbox.com/u/40773/love-0.8.0-openalsoft.zi
 	Linux 32-bit:
 	
 		$ wget https://github.com/downloads/kyleconroy/tmx2lua/tmx2lua.linux.tar
+=======
+on the subreddit. The steps below are only needed if you want to write code for
+the game.
+>>>>>>> upstream/master
 
-5. Install tmx2lua
+### Getting started with development on OS X / Linux
 
-		$ tar -xf tmx2lua.linux*.tar
-		$ sudo cp tmx2lua /usr/bin/tmx2lua
+Getting start is easy. Just clone the repository and run `make run`.
 
+<<<<<<< HEAD
 6. Clone your newly forked server repository and change directory
 	Note: You have to copy your repository url from github ( ex: https://github.com/username/hawkthorne-server-lua.git )
 
 		$ git clone (your forked repository url)
 		$ cd hawkthorne-server-lua
+=======
+```bash
+$ git clone git://github.com/kyleconroy/hawkthorne-journey.git
+$ cd hawkthorne-journey
+$ make run
+```
 
-7. Build your maps ( this must be done each time you change a map )
+### Getting started with development on Windows
+>>>>>>> upstream/master
 
-		$ make maps
+First, download and install [Github for Windows](http://windows.github.com/)
+which will setup git on your computer. You'll also need PowerShell, which comes
+pre-installed on Windows 7 & 8.
 
+Once you've installed and logged in with Github for Windows, go to
+`https://github.com/kyleconroy/hawkthorne-journey` and click the "Clone in
+Windows" button.
+
+<<<<<<< HEAD
 8. Run the server
 
 		$ love src
@@ -268,16 +297,27 @@ alternate version [here](https://dl.dropbox.com/u/40773/love-0.8.0-openalsoft.zi
 Notes: 
 
 i)
+=======
+Once you have the repo, click on it in Github for Windows, select "tools > open a shell here".
 
-        $ make && love src
-        
-will only build necessary maps and then run the executable.
+In your new PowerShell window, run
 
-ii) 
+```powershell
+> .\make.ps1 run
+```
+ 
+### Next steps
+>>>>>>> upstream/master
 
-        $ love src --console
+Congratulations! You're running Journey to the Center of Hawkthorne! Your next steps can be:
 
-will additionally launch a handy console for print statements
+- Fix [bugs](https://github.com/kyleconroy/hawkthorne-journey/issues?labels=bug&state=open) with the game
+- Add new features and content to the game
+
+## Community
+
+- [/r/hawkthorne subreddit](http://www.reddit.com/r/hawkthorne)
+- [#hawkthorne@irc.freenode.net](http://webchat.freenode.net/?channels=hawkthorne) on IRC
 
 ## License
 
