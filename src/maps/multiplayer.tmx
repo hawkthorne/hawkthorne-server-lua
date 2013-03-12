@@ -1011,46 +1011,6 @@
   <object type="climbable" x="96" y="1536" width="24" height="144"/>
   <object type="climbable" x="624" y="1680" width="24" height="168"/>
   <object name="main" type="door" x="24" y="2232" width="48" height="72"/>
-  <object type="enemy" x="96" y="432" width="24" height="24">
-   <properties>
-    <property name="enemytype" value="acorn"/>
-   </properties>
-  </object>
-  <object type="enemy" x="600" y="1512" width="24" height="24">
-   <properties>
-    <property name="enemytype" value="acorn"/>
-   </properties>
-  </object>
-  <object type="enemy" x="768" y="1320" width="24" height="24">
-   <properties>
-    <property name="enemytype" value="acorn"/>
-   </properties>
-  </object>
-  <object type="enemy" x="864" y="984" width="24" height="24">
-   <properties>
-    <property name="enemytype" value="acorn"/>
-   </properties>
-  </object>
-  <object type="enemy" x="864" y="792" width="24" height="24">
-   <properties>
-    <property name="enemytype" value="acorn"/>
-   </properties>
-  </object>
-  <object type="enemy" x="576" y="432" width="24" height="24">
-   <properties>
-    <property name="enemytype" value="acorn"/>
-   </properties>
-  </object>
-  <object type="enemy" x="648" y="432" width="24" height="24">
-   <properties>
-    <property name="enemytype" value="acorn"/>
-   </properties>
-  </object>
-  <object type="enemy" x="552" y="2280" width="24" height="24">
-   <properties>
-    <property name="enemytype" value="acorn"/>
-   </properties>
-  </object>
   <object type="movingplatform" x="168" y="1368" width="48" height="24">
    <properties>
     <property name="line" value="multi_2"/>
@@ -1106,7 +1066,7 @@
   <object x="648" y="1176" width="384" height="24"/>
   <object x="600" y="1344" width="480" height="24"/>
   <object x="0" y="1536" width="1104" height="24"/>
-  <object x="72" y="1680" width="192" height="24"/>
+  <object x="48" y="1680" width="216" height="24"/>
   <object x="528" y="1680" width="216" height="24"/>
   <object x="1056" y="1752" width="48" height="24"/>
   <object x="1008" y="1848" width="96" height="24"/>
